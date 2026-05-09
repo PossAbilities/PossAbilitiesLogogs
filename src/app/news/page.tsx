@@ -1,7 +1,11 @@
+"use client";
+
 import { GlassCard } from "@/components/GlassCard";
-import { mockNews } from "@/lib/data";
+import { useData } from "@/components/DataProvider";
 
 export default function NewsPage() {
+  const { news } = useData();
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -9,7 +13,7 @@ export default function NewsPage() {
       </div>
 
       <div className="grid gap-6">
-        {mockNews.map((news) => (
+        {news.map((news) => (
           <GlassCard key={news.id} as="article">
             <div className="flex flex-col md:flex-row gap-6">
               <div className="flex-1">

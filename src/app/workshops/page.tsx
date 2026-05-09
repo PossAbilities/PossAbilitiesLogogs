@@ -1,13 +1,17 @@
+"use client";
+
 import { GlassCard } from "@/components/GlassCard";
-import { mockWorkshops } from "@/lib/data";
+import { useData } from "@/components/DataProvider";
 
 export default function WorkshopsPage() {
+  const { workshops } = useData();
+
   return (
     <div className="space-y-8">
       <h1 className="text-4xl md:text-5xl font-extrabold text-pink-900">Workshops</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {mockWorkshops.map((workshop) => (
+        {workshops.map((workshop) => (
           <GlassCard key={workshop.id} className="bg-pink-50/40">
             <div className="flex items-start gap-4">
               <div className="text-5xl p-4 bg-white/60 rounded-2xl">🎨</div>

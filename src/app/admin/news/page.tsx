@@ -1,11 +1,10 @@
 "use client";
 
 import { GlassCard } from "@/components/GlassCard";
-import { mockNews } from "@/lib/data";
-import { useState } from "react";
+import { useData } from "@/components/DataProvider";
 
 export default function AdminNewsPage() {
-  const [news, setNews] = useState(mockNews);
+  const { news, setNews } = useData();
 
   const handleDelete = (id: string) => {
     setNews(news.filter(item => item.id !== id));

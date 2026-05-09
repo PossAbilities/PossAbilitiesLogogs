@@ -1,11 +1,10 @@
 "use client";
 
 import { GlassCard } from "@/components/GlassCard";
-import { mockEvents } from "@/lib/data";
-import { useState } from "react";
+import { useData } from "@/components/DataProvider";
 
 export default function AdminEventsPage() {
-  const [events, setEvents] = useState(mockEvents);
+  const { events, setEvents } = useData();
 
   const handleDelete = (id: string) => {
     setEvents(events.filter(item => item.id !== id));

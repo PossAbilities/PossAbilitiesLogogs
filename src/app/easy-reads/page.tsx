@@ -1,7 +1,11 @@
+"use client";
+
 import { GlassCard } from "@/components/GlassCard";
-import { mockEasyReads } from "@/lib/data";
+import { useData } from "@/components/DataProvider";
 
 export default function EasyReadsPage() {
+  const { easyReads } = useData();
+
   return (
     <div className="space-y-8">
       <h1 className="text-4xl md:text-5xl font-extrabold text-green-900">Easy Reads</h1>
@@ -10,7 +14,7 @@ export default function EasyReadsPage() {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {mockEasyReads.map((item) => (
+        {easyReads.map((item) => (
           <GlassCard key={item.id} className="bg-green-50/40 border-green-200/50">
             <h2 className="text-3xl font-bold mb-4 text-green-800">{item.title}</h2>
             <div className="bg-white/60 p-6 rounded-2xl">

@@ -1,13 +1,17 @@
+"use client";
+
 import { GlassCard } from "@/components/GlassCard";
-import { mockEvents } from "@/lib/data";
+import { useData } from "@/components/DataProvider";
 
 export default function EventsPage() {
+  const { events } = useData();
+
   return (
     <div className="space-y-8">
       <h1 className="text-4xl md:text-5xl font-extrabold text-orange-900">Upcoming Events</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {mockEvents.map((event) => (
+        {events.map((event) => (
           <GlassCard key={event.id} className="bg-orange-50/40 hover:bg-orange-50/60 transition-colors">
             <h2 className="text-2xl font-bold mb-2">{event.title}</h2>
             <div className="bg-white/60 rounded-lg p-4 mb-4 border border-orange-100">

@@ -1,9 +1,13 @@
+"use client";
+
 import { GlassCard } from "@/components/GlassCard";
 import { BirthdayBanner } from "@/components/BirthdayBanner";
 import Link from "next/link";
-import { mockNews, mockEvents } from "@/lib/data";
+import { useData } from "@/components/DataProvider";
 
 export default function Home() {
+  const { news, events } = useData();
+
   return (
     <div className="pt-8">
       <BirthdayBanner />
@@ -18,7 +22,7 @@ export default function Home() {
             <div>
               <h2 id="news-heading" className="text-4xl font-black tracking-tighter mb-6 text-slate-800">Latest News</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-                {mockNews.slice(0, 2).map((item) => (
+                {news.slice(0, 2).map((item) => (
                   <article key={item.id} className="p-6 bg-white/20 rounded-2xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all">
                     <h3 className="text-xl font-bold mb-3 text-slate-900">{item.title}</h3>
                     <p className="text-slate-700 easy-read-text line-clamp-3">{item.content}</p>
@@ -40,7 +44,7 @@ export default function Home() {
              <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-400/20 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none"></div>
             <h2 id="events-heading" className="text-3xl font-black tracking-tighter mb-6 text-purple-900">Upcoming Events</h2>
             <div className="space-y-4 flex-1 relative z-10">
-              {mockEvents.slice(0, 2).map((event) => (
+              {events.slice(0, 2).map((event) => (
                 <div key={event.id} className="p-5 bg-white/20 rounded-2xl shadow-sm border border-white/30">
                   <h3 className="text-lg font-bold text-slate-900 leading-tight">{event.title}</h3>
                   <p className="font-semibold text-purple-800 mt-2 text-sm">{new Date(event.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long' })}</p>

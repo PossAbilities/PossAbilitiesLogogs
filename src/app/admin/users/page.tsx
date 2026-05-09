@@ -1,11 +1,11 @@
 "use client";
 
 import { GlassCard } from "@/components/GlassCard";
-import { mockUsers, User } from "@/lib/data";
-import { useState } from "react";
+import { User } from "@/lib/data";
+import { useData } from "@/components/DataProvider";
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const { users, setUsers } = useData();
 
   const handleDelete = (id: string) => {
     setUsers(users.filter(item => item.id !== id));
