@@ -19,7 +19,7 @@ export default function Home() {
               <h2 id="news-heading" className="text-4xl font-black tracking-tighter mb-6 text-slate-800">Latest News</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                 {mockNews.slice(0, 2).map((item) => (
-                  <article key={item.id} className="p-6 bg-white/40 rounded-2xl border border-white/40 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all">
+                  <article key={item.id} className="p-6 bg-white/20 rounded-2xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all">
                     <h3 className="text-xl font-bold mb-3 text-slate-900">{item.title}</h3>
                     <p className="text-slate-700 easy-read-text line-clamp-3">{item.content}</p>
                   </article>
@@ -41,7 +41,7 @@ export default function Home() {
             <h2 id="events-heading" className="text-3xl font-black tracking-tighter mb-6 text-purple-900">Upcoming Events</h2>
             <div className="space-y-4 flex-1 relative z-10">
               {mockEvents.slice(0, 2).map((event) => (
-                <div key={event.id} className="p-5 bg-white/50 rounded-2xl shadow-sm border border-white/60">
+                <div key={event.id} className="p-5 bg-white/20 rounded-2xl shadow-sm border border-white/30">
                   <h3 className="text-lg font-bold text-slate-900 leading-tight">{event.title}</h3>
                   <p className="font-semibold text-purple-800 mt-2 text-sm">{new Date(event.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long' })}</p>
                   <p className="text-slate-600 text-sm mt-1 flex items-center gap-1">
@@ -51,7 +51,7 @@ export default function Home() {
               ))}
             </div>
             <div className="mt-6 relative z-10">
-              <Link href="/events" className="block w-full text-center bg-white/60 hover:bg-white/80 text-purple-900 font-bold py-3 px-6 rounded-full transition-colors focus-visible:outline-purple-500 shadow-sm border border-white/80">
+              <Link href="/events" className="block w-full text-center bg-white/20 hover:bg-white/40 text-purple-900 font-bold py-3 px-6 rounded-full transition-colors focus-visible:outline-purple-500 shadow-sm border border-white/30">
                 All events
               </Link>
             </div>
@@ -121,18 +121,18 @@ export default function Home() {
 
         {/* Quick Links Row (Spans 12 columns) */}
         <section aria-labelledby="quick-links-heading" className="col-span-1 md:col-span-4 lg:col-span-12">
-          <GlassCard className="bg-white/30 border-white/40">
+          <GlassCard className="bg-white/10 border-white/30">
             <h2 id="quick-links-heading" className="sr-only">Quick Links</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-               <Link href="/videos" className="flex items-center justify-center gap-4 p-6 bg-white/50 rounded-2xl hover:bg-white/80 transition-colors border border-white/60 group focus-visible:outline-teal-500 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+               <Link href="/videos" className="flex items-center justify-center gap-4 p-6 bg-white/20 rounded-2xl hover:bg-white/30 transition-colors border border-white/30 group focus-visible:outline-teal-500 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
                  <span className="text-3xl group-hover:scale-110 transition-transform drop-shadow-sm">📺</span>
                  <span className="text-xl font-bold text-slate-800">Watch Videos</span>
                </Link>
-               <Link href="/easy-reads" className="flex items-center justify-center gap-4 p-6 bg-white/50 rounded-2xl hover:bg-white/80 transition-colors border border-white/60 group focus-visible:outline-teal-500 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+               <Link href="/easy-reads" className="flex items-center justify-center gap-4 p-6 bg-white/20 rounded-2xl hover:bg-white/30 transition-colors border border-white/30 group focus-visible:outline-teal-500 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
                  <span className="text-3xl group-hover:scale-110 transition-transform drop-shadow-sm">📚</span>
                  <span className="text-xl font-bold text-slate-800">Easy Reads</span>
                </Link>
-               <Link href="/workshops" className="flex items-center justify-center gap-4 p-6 bg-white/50 rounded-2xl hover:bg-white/80 transition-colors border border-white/60 group focus-visible:outline-teal-500 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+               <Link href="/workshops" className="flex items-center justify-center gap-4 p-6 bg-white/20 rounded-2xl hover:bg-white/30 transition-colors border border-white/30 group focus-visible:outline-teal-500 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
                  <span className="text-3xl group-hover:scale-110 transition-transform drop-shadow-sm">🎨</span>
                  <span className="text-xl font-bold text-slate-800">Workshops</span>
                </Link>
