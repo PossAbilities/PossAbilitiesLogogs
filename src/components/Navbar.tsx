@@ -56,24 +56,25 @@ export default function Navbar() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0, marginTop: 0 }}
-            animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
-            exit={{ opacity: 0, height: 0, marginTop: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="md:hidden overflow-hidden w-full px-6 pb-6 relative z-10"
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="md:hidden absolute top-full left-0 right-0 mt-2 mx-4 bg-white/40 backdrop-blur-3xl border border-white/40 shadow-2xl rounded-2xl overflow-hidden z-50"
           >
-            <ul className="flex flex-col items-end gap-6 text-2xl font-bold">
-              {navLinks.map((link) => (
+            <ul className="flex flex-col p-4 divide-y divide-white/20">
+              {navLinks.map((link, index) => (
                 <motion.li
                   key={link.href}
-                  initial={{ opacity: 0, x: 20 }}
+                  initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 20 }}
-                  transition={{ duration: 0.2, delay: 0.1 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={{ duration: 0.2, delay: index * 0.05 }}
+                  className="py-3"
                 >
                   <Link
                     href={link.href}
-                    className="text-slate-800 hover:text-teal-600 transition-colors"
+                    className="block text-xl font-bold text-slate-800 hover:text-teal-600 transition-colors px-2"
                     onClick={() => setIsOpen(false)}
                   >
                     {link.label}
@@ -81,14 +82,15 @@ export default function Navbar() {
                 </motion.li>
               ))}
               <motion.li
-                initial={{ opacity: 0, x: 20 }}
+                initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.2, delay: 0.2 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2, delay: navLinks.length * 0.05 }}
+                className="py-3"
               >
                 <Link
                   href="/admin"
-                  className="text-purple-600 hover:text-purple-800 transition-colors"
+                  className="block text-xl font-bold text-purple-600 hover:text-purple-800 transition-colors px-2"
                   onClick={() => setIsOpen(false)}
                 >
                   Admin
