@@ -23,9 +23,15 @@ export default function Home() {
               <h2 id="news-heading" className="text-4xl font-black tracking-tighter mb-6 text-slate-800">Latest News</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                 {news.slice(0, 2).map((item) => (
-                  <article key={item.id} className="p-6 bg-white/20 rounded-2xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all">
+                  <article key={item.id} className="p-6 bg-white/20 rounded-2xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all flex flex-col">
                     <h3 className="text-xl font-bold mb-3 text-slate-900">{item.title}</h3>
-                    <p className="text-slate-700 easy-read-text line-clamp-3">{item.content}</p>
+                    <p className="text-slate-700 easy-read-text line-clamp-3 mb-4 flex-1">{item.content}</p>
+                    <Link
+                      href={`/news/${item.id}`}
+                      className="inline-flex items-center gap-2 text-teal-700 font-bold hover:text-teal-900 transition-colors mt-auto group"
+                    >
+                      Read more <span aria-hidden="true" className="group-hover:translate-x-1 transition-transform">&rarr;</span>
+                    </Link>
                   </article>
                 ))}
               </div>

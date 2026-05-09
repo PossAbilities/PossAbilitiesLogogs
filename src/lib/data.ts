@@ -53,12 +53,14 @@ export const mockNews: NewsItem[] = [
     title: "Welcome to the PossAbilities Portal!",
     content: "We are so excited to launch our new portal. You can find news, events, and easy reads here.",
     date: "2024-05-01T10:00:00Z",
+    imageUrl: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=2070&auto=format&fit=crop",
   },
   {
     id: "2",
     title: "Summer Party Coming Soon",
     content: "Get ready for our big summer party next month! There will be music, food, and dancing.",
     date: "2024-05-05T14:30:00Z",
+    imageUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1974&auto=format&fit=crop",
   }
 ];
 
