@@ -26,12 +26,14 @@ export default function Home() {
                   <article key={item.id} className="p-6 bg-white/20 rounded-2xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all flex flex-col">
                     <h3 className="text-xl font-bold mb-3 text-slate-900">{item.title}</h3>
                     <p className="text-slate-700 easy-read-text line-clamp-3 mb-4 flex-1">{item.content}</p>
-                    <Link
-                      href={`/news/${item.id}`}
-                      className="inline-flex items-center gap-2 text-teal-700 font-bold hover:text-teal-900 transition-colors mt-auto group"
-                    >
-                      Read more <span aria-hidden="true" className="group-hover:translate-x-1 transition-transform">&rarr;</span>
-                    </Link>
+                    <div className="mt-auto flex justify-end">
+                      <Link
+                        href={`/news/${item.id}`}
+                        className="inline-flex items-center gap-1 text-slate-400 text-sm hover:text-slate-600 transition-colors group"
+                      >
+                        Read more <span aria-hidden="true" className="group-hover:translate-x-1 transition-transform">&rarr;</span>
+                      </Link>
+                    </div>
                   </article>
                 ))}
               </div>

@@ -23,10 +23,10 @@ export default function NewsPage() {
                 </p>
                 <h2 className="text-2xl md:text-3xl font-bold mb-4">{news.title}</h2>
                 <p className="easy-read-text text-gray-800 mb-6">{news.content}</p>
-                <div className="mt-auto">
+                <div className="mt-auto flex justify-end">
                   <Link
                     href={`/news/${news.id}`}
-                    className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-colors focus-visible:outline-blue-500 shadow-md group"
+                    className="inline-flex items-center gap-1 text-slate-400 text-sm hover:text-slate-600 transition-colors group"
                   >
                     Read more <span aria-hidden="true" className="group-hover:translate-x-1 transition-transform">&rarr;</span>
                   </Link>
