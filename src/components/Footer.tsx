@@ -2,17 +2,17 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="mt-auto py-8 text-center glass border-t-0 border-x-0 rounded-t-3xl" aria-label="Footer Navigation">
-      <div className="max-w-7xl mx-auto px-4 flex flex-col items-center gap-4">
-        <p className="text-lg font-medium">PossAbilities Portal - Making life better</p>
-        <div className="flex flex-wrap justify-center gap-6 easy-read-text font-bold text-blue-700">
-          <Link href="/whistleblowing" className="hover:underline focus-visible:outline-blue-500 rounded-md px-2 py-1">
+    <footer className="mt-auto py-4 backdrop-blur-md bg-white/10 border-t border-white/20" aria-label="Footer Navigation">
+      <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs tracking-widest text-slate-800">
+        <p className="font-semibold uppercase">&copy; {new Date().getFullYear()} PossAbilities</p>
+        <div className="flex flex-wrap justify-center gap-6 font-bold uppercase">
+          <Link href="/whistleblowing" className="hover:text-blue-700 transition-colors focus-visible:outline-blue-500 rounded-md">
             Whistleblowing
           </Link>
-          <Link href="/compliments-complaints" className="hover:underline focus-visible:outline-blue-500 rounded-md px-2 py-1">
+          <Link href="/compliments-complaints" className="hover:text-blue-700 transition-colors focus-visible:outline-blue-500 rounded-md">
             Compliments & Complaints
           </Link>
-          <Link href="/terms-of-use" className="hover:underline focus-visible:outline-blue-500 rounded-md px-2 py-1">
+          <Link href="/terms-of-use" className="hover:text-blue-700 transition-colors focus-visible:outline-blue-500 rounded-md">
             Terms of Use
           </Link>
         </div>
