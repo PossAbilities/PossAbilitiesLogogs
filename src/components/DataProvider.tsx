@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { supabase } from "@/utils/supabase";
 import {
   NewsItem,
   EventItem,
@@ -29,6 +30,7 @@ interface DataContextType {
   setEasyReads: React.Dispatch<React.SetStateAction<EasyReadItem[]>>;
   workshops: WorkshopItem[];
   setWorkshops: React.Dispatch<React.SetStateAction<WorkshopItem[]>>;
+  fetchNews: () => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -41,6 +43,60 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [easyReads, setEasyReads] = useState<EasyReadItem[]>(mockEasyReads);
   const [workshops, setWorkshops] = useState<WorkshopItem[]>(mockWorkshops);
 
+  const fetchNews = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('news')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        // Map Supabase columns back to our frontend model
+        const mappedData: NewsItem[] = data.map((item: { id: number | string, title: string, content: string, created_at: string, image_url: string }) => ({
+          id: item.id.toString(),
+          title: item.title,
+          content: item.content,
+          date: item.created_at,
+          imageUrl: item.image_url === 'placeholder' ? undefined : item.image_url,
+        }));
+        setNews(mappedData);
+      }
+    } catch (error) {
+      console.warn("Using mock news data (Supabase fetch failed):", error);
+    }
+  };
+
+  useEffect(() => {
+    let mounted = true;
+    const initFetch = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('news')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (mounted && data && data.length > 0) {
+          const mappedData: NewsItem[] = data.map((item: { id: number | string, title: string, content: string, created_at: string, image_url: string }) => ({
+            id: item.id.toString(),
+            title: item.title,
+            content: item.content,
+            date: item.created_at,
+            imageUrl: item.image_url === 'placeholder' ? undefined : item.image_url,
+          }));
+          setNews(mappedData);
+        }
+      } catch (error) {
+        console.warn("Using mock news data (Supabase fetch failed):", error);
+      }
+    };
+    initFetch();
+    return () => { mounted = false; };
+  }, []);
+
   return (
     <DataContext.Provider value={{
       users, setUsers,
@@ -48,7 +104,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       events, setEvents,
       videos, setVideos,
       easyReads, setEasyReads,
-      workshops, setWorkshops
+      workshops, setWorkshops,
+      fetchNews
     }}>
       {children}
     </DataContext.Provider>

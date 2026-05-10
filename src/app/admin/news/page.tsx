@@ -3,14 +3,26 @@
 import { useState } from "react";
 import { useData } from "@/components/DataProvider";
 import { NewsItem } from "@/lib/data";
+import { supabase } from "@/utils/supabase";
 
 export default function AdminNewsPage() {
-  const { news, setNews } = useData();
+  const { news, setNews, fetchNews } = useData();
   const [editingArticle, setEditingArticle] = useState<NewsItem | null>(null);
   const [view, setView] = useState<"list" | "form">("list");
+  const [loading, setLoading] = useState(false);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
+    setLoading(true);
+    // Optimistic UI update
     setNews(news.filter(item => item.id !== id));
+
+    const { error } = await supabase.from('news').delete().eq('id', id);
+    if (error) {
+      console.error("Error deleting:", error.message);
+      alert("Failed to delete from database. Please try again.");
+      fetchNews(); // Revert on failure
+    }
+    setLoading(false);
   };
 
   const handleEdit = (article: NewsItem) => {
@@ -23,24 +35,47 @@ export default function AdminNewsPage() {
     setView("form");
   };
 
-  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSaveNews = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
     const formData = new FormData(e.currentTarget);
 
-    const newArticle: NewsItem = {
-      id: editingArticle?.id || Date.now().toString(),
+    const payload = {
+      id: editingArticle?.id || undefined, // Supabase creates one if undefined
       title: formData.get("title") as string,
+      summary: formData.get("summary") as string,
       content: formData.get("content") as string,
-      date: editingArticle?.date || new Date().toISOString(),
-      // summary field could be added to NewsItem model if required later
+      image_url: 'placeholder', // Using the ADVOCACY placeholder logic
+      created_at: editingArticle?.date || new Date().toISOString(),
     };
 
-    if (editingArticle) {
-      setNews(news.map(item => item.id === newArticle.id ? newArticle : item));
+    const { error } = await supabase
+      .from('news')
+      .upsert(payload)
+      .select();
+
+    if (error) {
+      console.error("Error saving:", error.message);
+      alert("Something went wrong saving to Supabase! Falling back to local state.");
+
+      // Fallback local update to keep UI functional without valid Supabase keys
+      const newArticle: NewsItem = {
+        id: editingArticle?.id || Date.now().toString(),
+        title: payload.title,
+        content: payload.content,
+        date: payload.created_at,
+      };
+      if (editingArticle) {
+        setNews(news.map(item => item.id === newArticle.id ? newArticle : item));
+      } else {
+        setNews([newArticle, ...news]);
+      }
     } else {
-      setNews([newArticle, ...news]);
+      alert("News Published Successfully! ✨");
+      fetchNews(); // Refresh the list from DB
     }
 
+    setLoading(false);
     setView("list");
   };
 
@@ -59,7 +94,7 @@ export default function AdminNewsPage() {
           </button>
         </div>
 
-        <form onSubmit={handleSave} className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <form onSubmit={handleSaveNews} className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-2">Title</label>
@@ -96,16 +131,18 @@ export default function AdminNewsPage() {
             <div className="flex items-center gap-4 pt-4 border-t border-slate-800">
               <button
                 type="submit"
-                className="bg-teal-500 hover:bg-teal-400 text-slate-900 px-8 py-4 rounded-xl font-bold shadow-[0_0_20px_rgba(45,212,191,0.2)] transition-all"
+                disabled={loading}
+                className="bg-pink-500/80 hover:bg-pink-500 text-white backdrop-blur-md px-8 py-4 rounded-xl font-bold shadow-[0_0_20px_rgba(236,0,140,0.3)] transition-all border border-pink-400/30 disabled:opacity-50"
               >
-                Publish Changes
+                {loading ? "Publishing..." : "Publish Changes"}
               </button>
               <button
                 type="button"
                 onClick={() => setView("list")}
-                className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold transition-all"
+                disabled={loading}
+                className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-4 rounded-xl font-bold transition-all disabled:opacity-50"
               >
-                Save Draft
+                Cancel
               </button>
             </div>
           </div>
