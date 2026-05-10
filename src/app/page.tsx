@@ -23,16 +23,28 @@ export default function Home() {
               <h2 id="news-heading" className="text-4xl font-black tracking-tighter mb-6 text-slate-800">Latest News</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
                 {news.slice(0, 2).map((item) => (
-                  <article key={item.id} className="p-6 bg-white/20 rounded-2xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all flex flex-col">
-                    <h3 className="text-xl font-bold mb-3 text-slate-900">{item.title}</h3>
-                    <p className="text-slate-700 easy-read-text line-clamp-3 mb-4 flex-1">{item.content}</p>
-                    <div className="mt-auto flex justify-end">
-                      <Link
-                        href={`/news/${item.id}`}
-                        className="inline-flex items-center gap-1 text-slate-400 text-sm hover:text-slate-600 transition-colors group"
-                      >
-                        Read more <span aria-hidden="true" className="group-hover:translate-x-1 transition-transform">&rarr;</span>
-                      </Link>
+                  <article key={item.id} className="group/card bg-white/20 rounded-2xl border border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all flex flex-col overflow-hidden">
+                    {/* Glass-Frame Image Thumbnail */}
+                    <div className="relative w-full aspect-video bg-teal-500 rounded-t-2xl shadow-[inset_0_1px_4px_rgba(255,255,255,0.3)] border-b border-white/20 overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-tr from-teal-600 to-teal-400 group-hover/card:brightness-110 group-hover/card:scale-105 transition-all duration-500 ease-out"></div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-white font-black tracking-widest text-xl uppercase drop-shadow-md z-10">
+                          ADVOCACY
+                        </span>
+                      </div>
+                    </div>
+                    {/* Card Content */}
+                    <div className="p-6 flex-1 flex flex-col backdrop-blur-sm">
+                      <h3 className="text-xl font-bold mb-3 text-slate-900">{item.title}</h3>
+                      <p className="text-slate-700 easy-read-text line-clamp-3 mb-4 flex-1">{item.content}</p>
+                      <div className="mt-auto flex justify-end">
+                        <Link
+                          href={`/news/${item.id}`}
+                          className="inline-flex items-center gap-1 text-slate-400 text-sm hover:text-slate-600 transition-colors group/link"
+                        >
+                          Read more <span aria-hidden="true" className="group-hover/link:translate-x-1 transition-transform">&rarr;</span>
+                        </Link>
+                      </div>
                     </div>
                   </article>
                 ))}
