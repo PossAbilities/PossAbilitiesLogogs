@@ -80,12 +80,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          const mappedData: NewsItem[] = data.map((item: { id: number | string, title: string, content: string, created_at: string, image_url: string }) => ({
+          const mappedData: NewsItem[] = data.map((item: { id: number | string, title: string, content: string, created_at: string, image_url: string, image_urls?: string[] }) => ({
             id: item.id.toString(),
             title: item.title,
             content: item.content,
             date: item.created_at,
             imageUrl: item.image_url === 'placeholder' ? undefined : item.image_url,
+            imageUrls: item.image_urls || [],
           }));
           setNews(mappedData);
         }

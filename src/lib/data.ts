@@ -11,6 +11,7 @@ export type NewsItem = {
   content: string;
   date: string;
   imageUrl?: string;
+  imageUrls?: string[];
 };
 
 export type EventItem = {

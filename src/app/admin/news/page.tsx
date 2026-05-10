@@ -10,6 +10,8 @@ export default function AdminNewsPage() {
   const [editingArticle, setEditingArticle] = useState<NewsItem | null>(null);
   const [view, setView] = useState<"list" | "form">("list");
   const [loading, setLoading] = useState(false);
+  const [mediaFiles, setMediaFiles] = useState<{ url?: string; file?: File, id: string }[]>([]);
+  const [deletedMedia, setDeletedMedia] = useState<string[]>([]);
 
   const handleDelete = async (id: string) => {
     setLoading(true);
@@ -27,52 +29,131 @@ export default function AdminNewsPage() {
 
   const handleEdit = (article: NewsItem) => {
     setEditingArticle(article);
+    if (article.imageUrls) {
+      setMediaFiles(article.imageUrls.map(url => ({ url, id: Math.random().toString() })));
+    } else {
+      setMediaFiles([]);
+    }
+    setDeletedMedia([]);
     setView("form");
   };
 
   const handleAddNew = () => {
     setEditingArticle(null);
+    setMediaFiles([]);
+    setDeletedMedia([]);
     setView("form");
+  };
+
+  const handleAddMedia = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const newFiles = Array.from(e.target.files).map(file => ({
+        file,
+        url: URL.createObjectURL(file), // Temp preview
+        id: Math.random().toString()
+      }));
+      setMediaFiles([...mediaFiles, ...newFiles]);
+    }
+  };
+
+  const handleRemoveMedia = (idToRemove: string, urlToRemove?: string) => {
+    setMediaFiles(mediaFiles.filter(m => m.id !== idToRemove));
+    if (urlToRemove && !urlToRemove.startsWith("blob:")) {
+      setDeletedMedia([...deletedMedia, urlToRemove]);
+    }
+  };
+
+  const uploadImage = async (file: File, articleId: string) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${articleId}/${Math.random()}.${fileExt}`;
+
+    const { error } = await supabase.storage
+      .from('news-media')
+      .upload(fileName, file);
+
+    if (error) throw error;
+
+    const { data: urlData } = supabase.storage
+      .from('news-media')
+      .getPublicUrl(fileName);
+
+    return urlData.publicUrl;
+  };
+
+  const deleteImageFromStorage = async (fileUrl: string) => {
+    try {
+      if (fileUrl.includes('news-media/')) {
+        const path = fileUrl.split('news-media/')[1];
+        const { error } = await supabase.storage.from('news-media').remove([path]);
+        if (error) console.error("Error deleting file from storage:", error.message);
+      }
+    } catch (e) {
+      console.error("Failed to delete image:", e);
+    }
   };
 
   const handleSaveNews = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     const formData = new FormData(e.currentTarget);
+    const articleId = editingArticle?.id || Date.now().toString();
 
-    const payload = {
-      id: editingArticle?.id || undefined, // Supabase creates one if undefined
-      title: formData.get("title") as string,
-      summary: formData.get("summary") as string,
-      content: formData.get("content") as string,
-      image_url: 'placeholder', // Using the ADVOCACY placeholder logic
-      created_at: editingArticle?.date || new Date().toISOString(),
-    };
+    try {
+      // 1. Delete trashed images from Storage
+      for (const url of deletedMedia) {
+        await deleteImageFromStorage(url);
+      }
 
-    const { error } = await supabase
-      .from('news')
-      .upsert(payload)
-      .select();
+      // 2. Upload new images and collect all URLs
+      const finalImageUrls: string[] = [];
+      for (const media of mediaFiles) {
+        if (media.file) {
+          // It's a new file, upload it
+          const newUrl = await uploadImage(media.file, articleId);
+          finalImageUrls.push(newUrl);
+        } else if (media.url && !media.url.startsWith("blob:")) {
+          // It's an existing url that wasn't deleted
+          finalImageUrls.push(media.url);
+        }
+      }
 
-    if (error) {
-      console.error("Error saving:", error.message);
+      const payload = {
+        id: editingArticle ? editingArticle.id : undefined,
+        title: formData.get("title") as string,
+        summary: formData.get("summary") as string,
+        content: formData.get("content") as string,
+        image_url: 'placeholder', // Maintain primary placeholder logic
+        image_urls: finalImageUrls,
+        created_at: editingArticle?.date || new Date().toISOString(),
+      };
+
+      const { error } = await supabase
+        .from('news')
+        .upsert(payload)
+        .select();
+
+      if (error) throw error;
+
+      alert("News Published Successfully! ✨");
+      fetchNews(); // Refresh the list from DB
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error("Error saving:", msg);
       alert("Something went wrong saving to Supabase! Falling back to local state.");
 
       // Fallback local update to keep UI functional without valid Supabase keys
       const newArticle: NewsItem = {
-        id: editingArticle?.id || Date.now().toString(),
-        title: payload.title,
-        content: payload.content,
-        date: payload.created_at,
+        id: articleId,
+        title: formData.get("title") as string,
+        content: formData.get("content") as string,
+        date: editingArticle?.date || new Date().toISOString(),
+        imageUrls: mediaFiles.filter(m => !m.file && m.url).map(m => m.url as string) // Just keep what we had for mock
       };
       if (editingArticle) {
         setNews(news.map(item => item.id === newArticle.id ? newArticle : item));
       } else {
         setNews([newArticle, ...news]);
       }
-    } else {
-      alert("News Published Successfully! ✨");
-      fetchNews(); // Refresh the list from DB
     }
 
     setLoading(false);
@@ -126,6 +207,37 @@ export default function AdminNewsPage() {
                 placeholder="Write your article content here..."
                 rows={8}
               />
+            </div>
+
+            {/* Media Management Section */}
+            <div>
+              <label className="block text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Media Management</label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {/* Upload Zone */}
+                <label className="cursor-pointer relative w-full aspect-square rounded-3xl border-2 border-dashed border-white/20 backdrop-blur-xl bg-slate-800/30 hover:bg-slate-800/50 transition-all flex flex-col items-center justify-center group shadow-sm">
+                  <span className="text-3xl text-slate-400 group-hover:text-white transition-colors group-hover:scale-110 drop-shadow-md">+</span>
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mt-2 group-hover:text-white transition-colors">Add Image</span>
+                  <input type="file" multiple accept="image/*" className="hidden" onChange={handleAddMedia} />
+                </label>
+
+                {/* Existing / Pending Media Items */}
+                {mediaFiles.map((media) => (
+                  <div key={media.id} className="relative w-full aspect-square rounded-3xl border border-white/20 backdrop-blur-md overflow-hidden group shadow-sm">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={media.url} alt="Media preview" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveMedia(media.id, media.url)}
+                        className="w-10 h-10 rounded-full bg-pink-500/80 text-white flex items-center justify-center hover:bg-pink-500 hover:scale-110 transition-all shadow-lg backdrop-blur-md"
+                        title="Delete"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div className="flex items-center gap-4 pt-4 border-t border-slate-800">
