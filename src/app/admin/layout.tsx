@@ -26,6 +26,11 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 </Link>
               </li>
               <li>
+                <Link href="/admin/easy-reads" className="block p-2 rounded-lg hover:bg-gray-200/50 transition-colors focus-visible:outline-gray-500">
+                  Easy Read Creator
+                </Link>
+              </li>
+              <li>
                 <Link href="/admin/users" className="block p-2 rounded-lg hover:bg-gray-200/50 transition-colors focus-visible:outline-gray-500">
                   Manage Users
                 </Link>
