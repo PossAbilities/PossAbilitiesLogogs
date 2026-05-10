@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { jsPDF } from "jspdf";
 
 interface EasyReadSection {
   id: string;
@@ -34,7 +35,41 @@ export default function EasyReadGuideCreator() {
   };
 
   const handleExportPDF = () => {
-    alert("PDF Export functionality will be implemented here. For now, enjoy the preview!");
+    const doc = new jsPDF();
+    let yOffset = 20;
+
+    // Title of the Guide
+    doc.setFontSize(22);
+    doc.text("PossAbilities Easy Read Guide", 20, yOffset);
+    yOffset += 20;
+
+    sections.forEach((section) => {
+      // 1. Add Image (Placeholder logic)
+      // If we had a real image URL, we'd need to convert it to base64 or fetch it.
+      // For now, per instructions, we use the Teal placeholder.
+      doc.setFillColor(102, 204, 204); // Your brand Teal
+      doc.roundedRect(20, yOffset, 50, 40, 5, 5, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(10);
+      doc.text("ADVOCACY", 32, yOffset + 22);
+
+      // 2. Add Simple Text
+      doc.setTextColor(26, 26, 46); // Near black
+      doc.setFontSize(16);
+      // This wraps the text so it doesn't run off the page
+      const splitText = doc.splitTextToSize(section.text || "...", 100);
+      doc.text(splitText, 80, yOffset + 15);
+
+      yOffset += 50; // Move down for the next section
+
+      // Basic pagination
+      if (yOffset > 270) {
+        doc.addPage();
+        yOffset = 20;
+      }
+    });
+
+    doc.save("Easy-Read-Guide.pdf");
   };
 
   return (
