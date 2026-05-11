@@ -15,6 +15,7 @@ export type NewsItem = {
 };
 
 export type EventItem = {
+  imageUrl?: string;
   id: string;
   title: string;
   description: string;

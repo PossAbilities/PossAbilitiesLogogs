@@ -1,3 +1,5 @@
+#!/bin/bash
+cat << 'INNER_EOF' > src/app/admin/events/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -220,3 +222,4 @@ export default function AdminEventsPage() {
     </div>
   );
 }
+INNER_EOF

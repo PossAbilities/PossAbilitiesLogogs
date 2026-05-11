@@ -1,3 +1,5 @@
+#!/bin/bash
+cat << 'INNER_EOF' > src/app/page.tsx
 "use client";
 
 import { useData } from "@/components/DataProvider";
@@ -388,3 +390,4 @@ export default function Home() {
     </div>
   );
 }
+INNER_EOF

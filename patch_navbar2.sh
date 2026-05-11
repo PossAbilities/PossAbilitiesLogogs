@@ -1,3 +1,5 @@
+#!/bin/bash
+cat << 'INNEREOF' > /app/src/components/Navbar.tsx
 "use client";
 
 import Link from 'next/link';
@@ -259,3 +261,4 @@ export default function Navbar() {
     </header>
   );
 }
+INNEREOF
