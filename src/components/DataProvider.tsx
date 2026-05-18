@@ -54,6 +54,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mappedData: NewsItem[] = data.map((item: any) => ({
           id: item.id.toString(),
           title: item.title,
@@ -79,6 +80,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mappedData: EventItem[] = data.map((item: any) => ({
           id: item.id.toString(),
           title: item.title,
@@ -107,6 +109,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const mappedData: NewsItem[] = data.map((item: any) => ({
             id: item.id.toString(),
             title: item.title,
@@ -132,6 +135,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const mappedData: EventItem[] = data.map((item: any) => ({
             id: item.id.toString(),
             title: item.title,

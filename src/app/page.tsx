@@ -3,7 +3,7 @@
 import { useData } from "@/components/DataProvider";
 import { GlassCard } from "@/components/GlassCard";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function Home() {
   const { news, events } = useData();
@@ -46,7 +46,7 @@ export default function Home() {
         top: `${Math.floor(Math.random() * 60) + 10}%`,
         left: `${Math.floor(Math.random() * 60) + 10}%`,
       };
-      setShoutouts([...shoutouts, newShoutout as any]);
+      setShoutouts([...shoutouts, newShoutout as unknown as typeof shoutouts[0]]);
       setShowShoutoutModal(false);
       setShoutoutName("");
       setShoutoutMessage("");

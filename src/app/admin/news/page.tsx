@@ -100,22 +100,24 @@ export default function AdminNewsPage() {
 
     try {
       // 1. Delete trashed images from Storage
-      for (const url of deletedMedia) {
-        await deleteImageFromStorage(url);
-      }
+      await Promise.all(
+        deletedMedia.map((url) => deleteImageFromStorage(url))
+      );
 
-      // 2. Upload new images and collect all URLs
-      const finalImageUrls: string[] = [];
-      for (const media of mediaFiles) {
+      // 2. Upload new images and collect all URLs in parallel
+      const uploadPromises = mediaFiles.map(async (media) => {
         if (media.file) {
           // It's a new file, upload it
-          const newUrl = await uploadImage(media.file, articleId);
-          finalImageUrls.push(newUrl);
+          return await uploadImage(media.file, articleId);
         } else if (media.url && !media.url.startsWith("blob:")) {
           // It's an existing url that wasn't deleted
-          finalImageUrls.push(media.url);
+          return media.url;
         }
-      }
+        return null;
+      });
+
+      const uploadResults = await Promise.all(uploadPromises);
+      const finalImageUrls: string[] = uploadResults.filter((url): url is string => url !== null);
 
       const payload = {
         id: editingArticle ? editingArticle.id : undefined,
