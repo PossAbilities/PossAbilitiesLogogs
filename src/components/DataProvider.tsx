@@ -17,6 +17,26 @@ import {
   mockUsers
 } from "@/lib/data";
 
+
+interface SupabaseNewsRow {
+  id: { toString: () => string };
+  title: string;
+  content: string;
+  created_at: string;
+  image_url?: string;
+  image_urls?: string[];
+}
+
+interface SupabaseEventRow {
+  id: { toString: () => string };
+  title: string;
+  description?: string;
+  location?: string;
+  event_date?: string;
+  created_at: string;
+  image_url?: string;
+}
+
 interface DataContextType {
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
@@ -54,7 +74,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        const mappedData: NewsItem[] = data.map((item: any) => ({
+        const mappedData: NewsItem[] = data.map((item: SupabaseNewsRow) => ({
           id: item.id.toString(),
           title: item.title,
           content: item.content,
@@ -79,7 +99,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        const mappedData: EventItem[] = data.map((item: any) => ({
+        const mappedData: EventItem[] = data.map((item: SupabaseEventRow) => ({
           id: item.id.toString(),
           title: item.title,
           description: item.description || "",
@@ -107,7 +127,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          const mappedData: NewsItem[] = data.map((item: any) => ({
+          const mappedData: NewsItem[] = data.map((item: SupabaseNewsRow) => ({
             id: item.id.toString(),
             title: item.title,
             content: item.content,
@@ -132,7 +152,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          const mappedData: EventItem[] = data.map((item: any) => ({
+          const mappedData: EventItem[] = data.map((item: SupabaseEventRow) => ({
             id: item.id.toString(),
             title: item.title,
             description: item.description || "",
