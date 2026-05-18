@@ -95,7 +95,6 @@ export default function Navbar() {
       };
 
       recognitionRef.current.onerror = (event: { error: string }) => {
-        console.error('Speech recognition error', event.error);
         setIsListening(false);
         if (event.error !== 'no-speech') {
             setVoiceFeedback({ message: `Error listening. Please try clicking the button again. (${event.error})`, type: 'error' });
