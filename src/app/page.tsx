@@ -5,6 +5,19 @@ import { GlassCard } from "@/components/GlassCard";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
+interface Shoutout {
+  id: number;
+  initial: string;
+  color: string;
+  message: string;
+  delay: string;
+  duration: string;
+  top?: string;
+  left?: string;
+  right?: string;
+  bottom?: string;
+}
+
 export default function Home() {
   const { news, events } = useData();
   const [fontSizeMultiplier, setFontSizeMultiplier] = useState(1);
@@ -13,7 +26,7 @@ export default function Home() {
   const [showShoutoutModal, setShowShoutoutModal] = useState(false);
   const [shoutoutName, setShoutoutName] = useState("");
   const [shoutoutMessage, setShoutoutMessage] = useState("");
-  const [shoutouts, setShoutouts] = useState([
+  const [shoutouts, setShoutouts] = useState<Shoutout[]>([
     { id: 1, initial: 'S', color: 'bg-pink-400', message: 'Great job Sam!', delay: '0s', duration: '3s', top: 'top-2', left: 'left-4' },
     { id: 2, initial: 'A', color: 'bg-blue-500', message: 'Thanks Alex ✨', delay: '1s', duration: '4s', top: 'top-20', left: 'auto', right: 'right-2' },
     { id: 3, initial: 'J', color: 'bg-orange-400', message: 'Happy bday! 🎉', delay: '0.5s', duration: '3.5s', top: 'auto', bottom: 'bottom-4', left: 'left-10' }
@@ -36,7 +49,7 @@ export default function Home() {
   const handleShoutoutSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (shoutoutName && shoutoutMessage) {
-      const newShoutout = {
+      const newShoutout: Shoutout = {
         id: Date.now(),
         initial: shoutoutName.charAt(0).toUpperCase(),
         color: 'bg-purple-500',
@@ -46,7 +59,7 @@ export default function Home() {
         top: `${Math.floor(Math.random() * 60) + 10}%`,
         left: `${Math.floor(Math.random() * 60) + 10}%`,
       };
-      setShoutouts([...shoutouts, newShoutout as any]);
+      setShoutouts([...shoutouts, newShoutout]);
       setShowShoutoutModal(false);
       setShoutoutName("");
       setShoutoutMessage("");
