@@ -100,9 +100,7 @@ export default function AdminNewsPage() {
 
     try {
       // 1. Delete trashed images from Storage
-      for (const url of deletedMedia) {
-        await deleteImageFromStorage(url);
-      }
+      await Promise.all(deletedMedia.map(url => deleteImageFromStorage(url)));
 
       // 2. Upload new images and collect all URLs
       const finalImageUrls: string[] = [];
