@@ -3,7 +3,7 @@
 import { useData } from "@/components/DataProvider";
 import { GlassCard } from "@/components/GlassCard";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface Shoutout {
   id: number;

@@ -7,12 +7,38 @@ import { Menu, X, Mic, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Types for Web Speech API
+
+interface SpeechRecognitionEvent {
+  results: {
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      };
+    };
+  };
+}
+
+interface SpeechRecognitionErrorEvent {
+  error: string;
+}
+
+interface SpeechRecognition {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
+  onstart: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+}
+
 declare global {
   interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    SpeechRecognition: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    webkitSpeechRecognition: any;
+    SpeechRecognition: { new (): SpeechRecognition } | undefined;
+    webkitSpeechRecognition: { new (): SpeechRecognition } | undefined;
   }
 }
 
@@ -34,8 +60,7 @@ export default function Navbar() {
     { href: '/workshops', label: 'Workshops' },
   ];
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   useEffect(() => {
     const clearFeedback = () => {
@@ -78,6 +103,7 @@ export default function Navbar() {
 
     if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) return;
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = false;
@@ -88,13 +114,12 @@ export default function Navbar() {
         setVoiceFeedback({ message: "Listening... Say a page name like 'News' or 'Events'", type: 'info' });
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      recognitionRef.current.onresult = (event: any) => {
+      recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
         const transcript = event.results[0][0].transcript.toLowerCase();
         handleVoiceCommand(transcript);
       };
 
-      recognitionRef.current.onerror = (event: { error: string }) => {
+      recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error', event.error);
         setIsListening(false);
         if (event.error !== 'no-speech') {
