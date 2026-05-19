@@ -28,10 +28,11 @@ export default function Home() {
   const [showShoutoutModal, setShowShoutoutModal] = useState(false);
   const [shoutoutName, setShoutoutName] = useState("");
   const [shoutoutMessage, setShoutoutMessage] = useState("");
+  const [hoveredShoutout, setHoveredShoutout] = useState<number | null>(null);
   const [shoutouts, setShoutouts] = useState<Shoutout[]>([
-    { id: 1, initial: 'S', color: 'bg-pink-400', message: 'Great job Sam!', delay: '0s', duration: '3s', top: 'top-2', left: 'left-4' },
-    { id: 2, initial: 'A', color: 'bg-blue-500', message: 'Thanks Alex ✨', delay: '1s', duration: '4s', top: 'top-20', left: 'auto', right: 'right-2' },
-    { id: 3, initial: 'J', color: 'bg-orange-400', message: 'Happy bday! 🎉', delay: '0.5s', duration: '3.5s', top: 'auto', bottom: 'bottom-4', left: 'left-10' }
+    { id: 1, initial: 'S', color: 'bg-pink-400', message: 'Great job Sam!', delay: '0s', duration: '3s', top: '10%', left: '10%' },
+    { id: 2, initial: 'A', color: 'bg-blue-500', message: 'Thanks Alex ✨', delay: '1s', duration: '4s', top: '30%', left: 'auto', right: '10%' },
+    { id: 3, initial: 'J', color: 'bg-orange-400', message: 'Happy bday! 🎉', delay: '0.5s', duration: '3.5s', top: 'auto', bottom: '15%', left: '20%' }
   ]);
 
   // Voice synthesis
@@ -323,17 +324,21 @@ export default function Home() {
             </div>
 
             <div className="relative h-48 w-full">
-              {shoutouts.map((shoutout) => (
+              {shoutouts.map((shoutout) => {
+                const isHovered = hoveredShoutout === shoutout.id;
+                return (
                 <div
                   key={shoutout.id}
-                  className="absolute p-3 flex items-center gap-3 animate-pulse hover:scale-105 hover:z-10 transition-transform bg-white/80 backdrop-blur-sm border border-white rounded-2xl shadow-sm cursor-pointer"
+                  onMouseEnter={() => setHoveredShoutout(shoutout.id)}
+                  onMouseLeave={() => setHoveredShoutout(null)}
+                  className={`absolute p-3 flex items-center gap-3 animate-pulse bg-white/90 backdrop-blur-md border border-white rounded-2xl shadow-lg cursor-pointer transition-all duration-300 ease-in-out ${isHovered ? 'z-50 scale-125 -translate-x-1/2 -translate-y-1/2' : ''}`}
                   style={{
                     animationDuration: shoutout.duration,
                     animationDelay: shoutout.delay,
-                    top: shoutout.top,
-                    left: shoutout.left,
-                    right: shoutout.right,
-                    bottom: shoutout.bottom
+                    top: isHovered ? '50%' : shoutout.top,
+                    left: isHovered ? '50%' : shoutout.left,
+                    right: isHovered ? 'auto' : shoutout.right,
+                    bottom: isHovered ? 'auto' : shoutout.bottom
                   }}
                   onClick={() => speakText(`${shoutout.initial} says ${shoutout.message}`)}
                 >
@@ -342,7 +347,7 @@ export default function Home() {
                    </div>
                    <span className="font-bold text-sm text-[#0B2136] pr-2">{shoutout.message}</span>
                 </div>
-              ))}
+              );})}
             </div>
 
             {/* Modal */}
