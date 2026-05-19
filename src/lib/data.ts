@@ -121,3 +121,17 @@ export const mockWorkshops: WorkshopItem[] = [
     description: "Learn how to use the bus and train safely.",
   }
 ];
+
+export type HeroSettings = {
+  id: string;
+  showHero: boolean;
+  imageUrl?: string;
+  linkUrl?: string;
+};
+
+export const mockHeroSettings: HeroSettings = {
+  id: "1",
+  showHero: false,
+  imageUrl: "",
+  linkUrl: "",
+};

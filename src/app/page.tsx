@@ -19,7 +19,7 @@ interface Shoutout {
 }
 
 export default function Home() {
-  const { news, events } = useData();
+  const { news, events, heroSettings } = useData();
   const [fontSizeMultiplier, setFontSizeMultiplier] = useState(1);
   const [highContrast, setHighContrast] = useState(false);
   const [mood, setMood] = useState<string | null>(null);
@@ -103,39 +103,59 @@ export default function Home() {
         </p>
       </div>
 
-      {/* Mood Tracker */}
+      {/* Conditional Hero Banner or Mood Tracker */}
       <section className="mb-12">
-        <GlassCard className="bg-white/60 border-white/40 text-center py-8">
-          <h2 className="text-2xl font-bold text-[#0B2136] mb-6 flex items-center justify-center gap-2">
-            How are you feeling today?
-            <button onClick={() => speakText("How are you feeling today?")} className="text-[#00CFB4] hover:scale-110 transition-transform p-2 rounded-full hover:bg-[#E8F3FA]" aria-label="Read out loud">
-               🔊
-            </button>
-          </h2>
-          <div className="flex flex-wrap justify-center gap-4">
-             {[
-               { emoji: '😊', label: 'Happy' },
-               { emoji: '😎', label: 'Cool' },
-               { emoji: '😴', label: 'Tired' },
-               { emoji: '😟', label: 'Sad' },
-               { emoji: '🤔', label: 'Thinking' }
-             ].map(m => (
-               <button
-                 key={m.label}
-                 onClick={() => handleMoodSelect(m.label)}
-                 className={`flex flex-col items-center p-4 rounded-2xl transition-all duration-300 ${mood === m.label ? 'bg-[#00CFB4]/20 border-2 border-[#00CFB4] scale-110 shadow-lg' : 'bg-white border border-slate-200 hover:bg-slate-50 hover:scale-105'}`}
-               >
-                 <span className="text-4xl mb-2">{m.emoji}</span>
-                 <span className="font-bold text-[#0B2136]">{m.label}</span>
-               </button>
-             ))}
-          </div>
-          {mood && (
-            <p className="mt-6 text-lg font-bold text-[#00CFB4] animate-fade-in">
-              Thanks for sharing! We hope you have a great day.
-            </p>
-          )}
-        </GlassCard>
+        {heroSettings?.showHero ? (
+          <GlassCard className="bg-white/60 border-white/40 overflow-hidden p-0">
+            {heroSettings.linkUrl ? (
+              <Link href={heroSettings.linkUrl} className="block group">
+                <img
+                  src={heroSettings.imageUrl || "/api/placeholder/1200/400"}
+                  alt="Promotional Banner"
+                  className="w-full h-[300px] md:h-[400px] object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </Link>
+            ) : (
+              <img
+                src={heroSettings.imageUrl || "/api/placeholder/1200/400"}
+                alt="Promotional Banner"
+                className="w-full h-[300px] md:h-[400px] object-cover"
+              />
+            )}
+          </GlassCard>
+        ) : (
+          <GlassCard className="bg-white/60 border-white/40 text-center py-8">
+            <h2 className="text-2xl font-bold text-[#0B2136] mb-6 flex items-center justify-center gap-2">
+              How are you feeling today?
+              <button onClick={() => speakText("How are you feeling today?")} className="text-[#00CFB4] hover:scale-110 transition-transform p-2 rounded-full hover:bg-[#E8F3FA]" aria-label="Read out loud">
+                 🔊
+              </button>
+            </h2>
+            <div className="flex flex-wrap justify-center gap-4">
+               {[
+                 { emoji: '😊', label: 'Happy' },
+                 { emoji: '😎', label: 'Cool' },
+                 { emoji: '😴', label: 'Tired' },
+                 { emoji: '😟', label: 'Sad' },
+                 { emoji: '🤔', label: 'Thinking' }
+               ].map(m => (
+                 <button
+                   key={m.label}
+                   onClick={() => handleMoodSelect(m.label)}
+                   className={`flex flex-col items-center p-4 rounded-2xl transition-all duration-300 ${mood === m.label ? 'bg-[#00CFB4]/20 border-2 border-[#00CFB4] scale-110 shadow-lg' : 'bg-white border border-slate-200 hover:bg-slate-50 hover:scale-105'}`}
+                 >
+                   <span className="text-4xl mb-2">{m.emoji}</span>
+                   <span className="font-bold text-[#0B2136]">{m.label}</span>
+                 </button>
+               ))}
+            </div>
+            {mood && (
+              <p className="mt-6 text-lg font-bold text-[#00CFB4] animate-fade-in">
+                Thanks for sharing! We hope you have a great day.
+              </p>
+            )}
+          </GlassCard>
+        )}
       </section>
 
       {/* Bento Grid Layout */}

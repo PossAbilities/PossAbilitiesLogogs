@@ -1,15 +1,11 @@
-🧹 Fix unsafe type assertion 'as any' in page.tsx
+feat: Implement Admin-configurable Hero Image Banner for main portal
 
-🎯 What:
-In `src/app/page.tsx`, the `shoutouts` state and the `newShoutout` object used an unsafe type assertion `as any`. I defined a `Shoutout` interface to correctly type the object and the state array.
+Added functionality to the Admin Dashboard allowing administrators to toggle
+between the existing "How are you feeling today?" widget and a new
+promotional Hero Image Banner on the main portal page.
 
-💡 Why:
-Using `as any` bypasses TypeScript's type checking, making the code prone to runtime errors. Defining a proper interface `Shoutout` ensures type safety and improves code readability and maintainability. It prevents typos and ensures that the data structure remains consistent.
-
-✅ Verification:
-- Verified that `npm run lint` passes (no errors related to the `shoutouts` typing). The remaining lint errors are outside the scope of this file/change.
-- Verified that `npm run build` succeeds without issues.
-- Confirmed that the fix only modified type definitions and removed `as any`, without changing the functionality of adding shoutouts.
-
-✨ Result:
-The codebase is now safer with proper typing for the `shoutouts` state, eliminating the need for `as any`.
+- Created a SQL migration to add a `hero_settings` table to Supabase.
+- Updated `DataProvider` to fetch and upsert `heroSettings` state.
+- Added a "Homepage Hero Banner" settings section to `/admin/page.tsx`.
+- Updated the main portal page (`/page.tsx`) to conditionally render the
+  Hero Image Banner or the Feeling Widget based on the configured state.

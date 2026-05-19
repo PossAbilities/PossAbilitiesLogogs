@@ -14,7 +14,9 @@ import {
   mockVideos,
   mockEasyReads,
   mockWorkshops,
-  mockUsers
+  mockUsers,
+  HeroSettings,
+  mockHeroSettings
 } from "@/lib/data";
 
 
@@ -50,6 +52,10 @@ interface DataContextType {
   setEasyReads: React.Dispatch<React.SetStateAction<EasyReadItem[]>>;
   workshops: WorkshopItem[];
   setWorkshops: React.Dispatch<React.SetStateAction<WorkshopItem[]>>;
+  heroSettings: HeroSettings;
+  setHeroSettings: React.Dispatch<React.SetStateAction<HeroSettings>>;
+  fetchHeroSettings: () => Promise<void>;
+  updateHeroSettings: (newSettings: HeroSettings) => Promise<void>;
   fetchNews: () => Promise<void>;
   fetchEvents: () => Promise<void>;
 }
@@ -57,12 +63,51 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [users, setUsers] = useState<User[]>(mockUsers,);
   const [news, setNews] = useState<NewsItem[]>(mockNews);
   const [events, setEvents] = useState<EventItem[]>(mockEvents);
   const [videos, setVideos] = useState<VideoItem[]>(mockVideos);
   const [easyReads, setEasyReads] = useState<EasyReadItem[]>(mockEasyReads);
   const [workshops, setWorkshops] = useState<WorkshopItem[]>(mockWorkshops);
+  const [heroSettings, setHeroSettings] = useState<HeroSettings>(mockHeroSettings);
+
+  const fetchHeroSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("hero_settings")
+        .select("*")
+        .limit(1)
+        .single();
+      if (error) throw error;
+      if (data) {
+        setHeroSettings({
+          id: data.id.toString(),
+          showHero: data.show_hero,
+          imageUrl: data.image_url,
+          linkUrl: data.link_url,
+        });
+      }
+    } catch (error) {
+      console.warn("Using mock hero settings data (Supabase fetch failed):", error);
+    }
+  };
+
+  const updateHeroSettings = async (newSettings: HeroSettings) => {
+    setHeroSettings(newSettings);
+    try {
+      const { error } = await supabase
+        .from("hero_settings")
+        .upsert({
+          id: "00000000-0000-0000-0000-000000000001", // hardcoded id from migration
+          show_hero: newSettings.showHero,
+          image_url: newSettings.imageUrl,
+          link_url: newSettings.linkUrl,
+        });
+      if (error) throw error;
+    } catch (error) {
+      console.error("Failed to update hero settings:", error);
+    }
+  };
 
   const fetchNews = async () => {
     try {
@@ -173,6 +218,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     initFetchNews();
     initFetchEvents();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchHeroSettings();
     return () => { mounted = false; };
   }, []);
 
@@ -184,7 +231,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
       videos, setVideos,
       easyReads, setEasyReads,
       workshops, setWorkshops,
-      fetchNews, fetchEvents
+      fetchNews, fetchEvents,
+      heroSettings, setHeroSettings,
+      fetchHeroSettings, updateHeroSettings
     }}>
       {children}
     </DataContext.Provider>
