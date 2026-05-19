@@ -59,7 +59,7 @@ export default function Home() {
         top: `${Math.floor(Math.random() * 60) + 10}%`,
         left: `${Math.floor(Math.random() * 60) + 10}%`,
       };
-      setShoutouts([...shoutouts, newShoutout as unknown as typeof shoutouts[0]]);
+      setShoutouts([...shoutouts, newShoutout]);
       setShowShoutoutModal(false);
       setShoutoutName("");
       setShoutoutMessage("");
