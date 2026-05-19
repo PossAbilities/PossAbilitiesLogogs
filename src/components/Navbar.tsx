@@ -7,6 +7,7 @@ import { Menu, X, Mic, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Types for Web Speech API
+
 interface SpeechRecognitionEvent {
   results: {
     [index: number]: {
@@ -21,27 +22,23 @@ interface SpeechRecognitionErrorEvent {
   error: string;
 }
 
-interface ISpeechRecognition {
+interface SpeechRecognition {
   continuous: boolean;
   interimResults: boolean;
   lang: string;
-  start(): void;
-  stop(): void;
-  abort(): void;
+  start: () => void;
+  stop: () => void;
+  abort: () => void;
   onstart: (() => void) | null;
   onresult: ((event: SpeechRecognitionEvent) => void) | null;
   onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
   onend: (() => void) | null;
 }
 
-interface SpeechRecognitionConstructor {
-  new (): ISpeechRecognition;
-}
-
 declare global {
   interface Window {
-    SpeechRecognition: SpeechRecognitionConstructor;
-    webkitSpeechRecognition: SpeechRecognitionConstructor;
+    SpeechRecognition: { new (): SpeechRecognition } | undefined;
+    webkitSpeechRecognition: { new (): SpeechRecognition } | undefined;
   }
 }
 
@@ -63,7 +60,7 @@ export default function Navbar() {
     { href: '/workshops', label: 'Workshops' },
   ];
 
-  const recognitionRef = useRef<ISpeechRecognition | null>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   useEffect(() => {
     const clearFeedback = () => {
@@ -106,6 +103,7 @@ export default function Navbar() {
 
     if (typeof window !== 'undefined' && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) return;
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = false;
       recognitionRef.current.interimResults = false;
@@ -121,7 +119,7 @@ export default function Navbar() {
         handleVoiceCommand(transcript);
       };
 
-      recognitionRef.current.onerror = (event: { error: string }) => {
+      recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error('Speech recognition error', event.error);
         setIsListening(false);
         if (event.error !== 'no-speech') {
