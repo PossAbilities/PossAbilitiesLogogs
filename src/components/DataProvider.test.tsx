@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { DataProvider, useData } from './DataProvider';
@@ -14,7 +13,7 @@ vi.mock('@/utils/supabase', () => ({
   supabase: {
     from: (table: string) => ({
       select: () => ({
-        order: (col: string, opts: unknown) => mockOrder(table, col, opts)
+        order: (col: string, opts: any) => mockOrder(table, col, opts)
       })
     })
   }
