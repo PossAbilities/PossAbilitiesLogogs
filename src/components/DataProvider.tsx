@@ -8,34 +8,20 @@ import {
   VideoItem,
   EasyReadItem,
   WorkshopItem,
-  User,
-  mockNews,
-  mockEvents,
-  mockVideos,
-  mockEasyReads,
-  mockWorkshops,
-  mockUsers
+  User
 } from "@/lib/data";
+import mockDataRaw from "@/lib/mock-data.json";
 
+// Type assertion for mock data
+const mockData = {
+  ...mockDataRaw,
+  mockUsers: mockDataRaw.mockUsers.map(user => ({
+    ...user,
+    role: user.role as "user" | "admin",
+    dateOfBirth: user.dateOfBirth === "CURRENT_DATE_PLACEHOLDER" ? new Date().toISOString() : user.dateOfBirth
+  }))
+};
 
-interface SupabaseNewsRow {
-  id: { toString: () => string };
-  title: string;
-  content: string;
-  created_at: string;
-  image_url?: string;
-  image_urls?: string[];
-}
-
-interface SupabaseEventRow {
-  id: { toString: () => string };
-  title: string;
-  description?: string;
-  location?: string;
-  event_date?: string;
-  created_at: string;
-  image_url?: string;
-}
 
 interface DataContextType {
   users: User[];
@@ -57,12 +43,12 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [users, setUsers] = useState<User[]>(mockUsers);
-  const [news, setNews] = useState<NewsItem[]>(mockNews);
-  const [events, setEvents] = useState<EventItem[]>(mockEvents);
-  const [videos, setVideos] = useState<VideoItem[]>(mockVideos);
-  const [easyReads, setEasyReads] = useState<EasyReadItem[]>(mockEasyReads);
-  const [workshops, setWorkshops] = useState<WorkshopItem[]>(mockWorkshops);
+  const [users, setUsers] = useState<User[]>(mockData.mockUsers);
+  const [news, setNews] = useState<NewsItem[]>(mockData.mockNews);
+  const [events, setEvents] = useState<EventItem[]>(mockData.mockEvents);
+  const [videos, setVideos] = useState<VideoItem[]>(mockData.mockVideos);
+  const [easyReads, setEasyReads] = useState<EasyReadItem[]>(mockData.mockEasyReads);
+  const [workshops, setWorkshops] = useState<WorkshopItem[]>(mockData.mockWorkshops);
 
   const fetchNews = async () => {
     try {
