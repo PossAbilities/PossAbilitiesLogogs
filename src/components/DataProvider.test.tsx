@@ -1,155 +1,183 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { DataProvider, useData } from './DataProvider';
 import { supabase } from '@/utils/supabase';
+import React from 'react';
 
-// Mock supabase
+// Mock Supabase
+const mockOrder = vi.fn();
+const mockSelect = vi.fn(() => ({ order: mockOrder }));
+const mockFrom = vi.fn(() => ({ select: mockSelect }));
+
 vi.mock('@/utils/supabase', () => ({
   supabase: {
-    from: vi.fn(),
-  },
+    from: (table: string) => ({
+      select: () => ({
+        order: (col: string, opts: any) => mockOrder(table, col, opts)
+      })
+    })
+  }
 }));
 
-const TestComponent = () => {
-  const { news, fetchNews, events, fetchEvents } = useData();
-
+const TestConsumer = () => {
+  const { news, events, fetchNews, fetchEvents } = useData();
   return (
     <div>
       <div data-testid="news-count">{news.length}</div>
       <div data-testid="events-count">{events.length}</div>
-      <button onClick={() => fetchNews()} data-testid="fetch-news-btn">Fetch News</button>
-      <button onClick={() => fetchEvents()} data-testid="fetch-events-btn">Fetch Events</button>
+      <div data-testid="news-title">{news[0]?.title}</div>
+      <div data-testid="events-title">{events[0]?.title}</div>
+      <button onClick={fetchNews} data-testid="fetch-news-btn">Fetch News</button>
+      <button onClick={fetchEvents} data-testid="fetch-events-btn">Fetch Events</button>
     </div>
   );
 };
 
+const ErrorConsumer = () => {
+  useData();
+  return <div>Should not render</div>;
+};
+
 describe('DataProvider', () => {
+  const originalWarn = console.warn;
+
   beforeEach(() => {
+    console.warn = vi.fn();
     vi.clearAllMocks();
+
+    // Default mock implementation
+    mockOrder.mockImplementation((table) => {
+      if (table === 'news') {
+        return Promise.resolve({
+          data: [{
+            id: 1,
+            title: 'Supabase News',
+            content: 'Content',
+            created_at: '2023-01-01',
+            image_url: 'placeholder',
+            image_urls: []
+          }],
+          error: null
+        });
+      }
+      if (table === 'events') {
+        return Promise.resolve({
+          data: [{
+            id: 1,
+            title: 'Supabase Event',
+            description: 'Desc',
+            location: 'Loc',
+            event_date: '2023-01-02',
+            created_at: '2023-01-01',
+            image_url: 'placeholder'
+          }],
+          error: null
+        });
+      }
+      return Promise.resolve({ data: [], error: null });
+    });
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    console.warn = originalWarn;
   });
 
-  const createMockChain = (resolvedValue: any) => {
-    const orderMock = vi.fn().mockResolvedValue(resolvedValue);
-    const selectMock = vi.fn(() => ({ order: orderMock }));
-    return { select: selectMock };
-  };
-
-  it('handles error in fetchNews gracefully', async () => {
-    const mockError = new Error('News fetch failed');
-    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-    vi.mocked(supabase.from).mockImplementation((table: string) => {
-      if (table === 'news') {
-        return createMockChain({ data: null, error: mockError }) as any;
-      }
-      return createMockChain({ data: [], error: null }) as any;
-    });
-
+  it('provides context to children and fetches data on mount', async () => {
     render(
       <DataProvider>
-        <TestComponent />
+        <TestConsumer />
       </DataProvider>
     );
 
-    // Initial fetch
-    await act(async () => {});
-
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      "Using mock news data (Supabase fetch failed):",
-      mockError
-    );
-
-    consoleWarnSpy.mockClear();
-
-    // Manual fetch
-    await act(async () => {
-      screen.getByTestId('fetch-news-btn').click();
+    // Initial render might have mock data, but we wait for supabase mock data
+    await waitFor(() => {
+      expect(screen.getByTestId('news-title')).toHaveTextContent('Supabase News');
+      expect(screen.getByTestId('events-title')).toHaveTextContent('Supabase Event');
     });
-
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      "Using mock news data (Supabase fetch failed):",
-      mockError
-    );
   });
 
-  it('handles error in fetchEvents gracefully', async () => {
-    const mockError = new Error('Events fetch failed');
-    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  it('throws error when useData is used outside provider', () => {
+    // We want to suppress the console.error from React
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(() => render(<ErrorConsumer />)).toThrow('useData must be used within a DataProvider');
+    consoleError.mockRestore();
+  });
 
-    vi.mocked(supabase.from).mockImplementation((table: string) => {
-      if (table === 'events') {
-        return createMockChain({ data: null, error: mockError }) as any;
-      }
-      return createMockChain({ data: [], error: null }) as any;
-    });
+  it('handles supabase fetch error gracefully', async () => {
+    mockOrder.mockImplementation(() => Promise.resolve({
+      data: null,
+      error: new Error('Supabase error')
+    }));
 
     render(
       <DataProvider>
-        <TestComponent />
+        <TestConsumer />
       </DataProvider>
     );
 
-    // Initial fetch
-    await act(async () => {});
-
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      "Using mock events data (Supabase fetch failed):",
-      mockError
-    );
-
-    consoleWarnSpy.mockClear();
-
-    // Manual fetch
-    await act(async () => {
-      screen.getByTestId('fetch-events-btn').click();
+    await waitFor(() => {
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining('Using mock news data (Supabase fetch failed):'),
+        expect.any(Error)
+      );
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining('Using mock events data (Supabase fetch failed):'),
+        expect.any(Error)
+      );
     });
-
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      "Using mock events data (Supabase fetch failed):",
-      mockError
-    );
   });
 
-  it('fetches data successfully', async () => {
-    const mockNewsData = [
-      { id: '1', title: 'News 1', content: 'Content 1', created_at: '2023-01-01', image_url: 'placeholder', image_urls: [] },
-    ];
-    const mockEventsData = [
-      { id: '1', title: 'Event 1', description: 'Desc 1', location: 'Loc 1', event_date: '2023-01-02', image_url: 'url2' },
-    ];
+  it('manual fetch calls update context', async () => {
+    // First let it mount with error so it stays on mock data
+    mockOrder.mockImplementation(() => Promise.resolve({ data: null, error: new Error('err') }));
 
-    vi.mocked(supabase.from).mockImplementation((table: string) => {
+    render(
+      <DataProvider>
+        <TestConsumer />
+      </DataProvider>
+    );
+
+    await waitFor(() => {
+      expect(console.warn).toHaveBeenCalled();
+    });
+
+    // Now fix mock to return real data
+    mockOrder.mockImplementation((table) => {
       if (table === 'news') {
-        return createMockChain({ data: mockNewsData, error: null }) as any;
+        return Promise.resolve({
+          data: [{
+            id: 2,
+            title: 'Manual Fetch News',
+            content: 'Content',
+            created_at: '2023-01-01'
+          }],
+          error: null
+        });
       }
       if (table === 'events') {
-        return createMockChain({ data: mockEventsData, error: null }) as any;
+        return Promise.resolve({
+          data: [{
+            id: 2,
+            title: 'Manual Fetch Event',
+            created_at: '2023-01-01'
+          }],
+          error: null
+        });
       }
-      return createMockChain({ data: [], error: null }) as any;
+      return Promise.resolve({ data: [], error: null });
     });
 
-    render(
-      <DataProvider>
-        <TestComponent />
-      </DataProvider>
-    );
+    // Click buttons
+    screen.getByTestId('fetch-news-btn').click();
 
-    await act(async () => {});
+    await waitFor(() => {
+      expect(screen.getByTestId('news-title')).toHaveTextContent('Manual Fetch News');
+    });
 
-    expect(screen.getByTestId('news-count')).toHaveTextContent('1');
-    expect(screen.getByTestId('events-count')).toHaveTextContent('1');
-  });
+    screen.getByTestId('fetch-events-btn').click();
 
-  it('throws error when useData is used outside of DataProvider', () => {
-    // Suppress console.error from React error boundary
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-
-    expect(() => render(<TestComponent />)).toThrow("useData must be used within a DataProvider");
-
-    consoleErrorSpy.mockRestore();
+    await waitFor(() => {
+      expect(screen.getByTestId('events-title')).toHaveTextContent('Manual Fetch Event');
+    });
   });
 });
