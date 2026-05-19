@@ -1,27 +1,39 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { User } from "@/lib/data";
 
 interface UserContextType {
   user: User | null;
-  setUser: (user: User | null) => void;
+  isLoading: boolean;
+  isAdmin: boolean;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  // Mock current user - let's make it their birthday today for testing!
-  const today = new Date();
-  const [user, setUser] = useState<User | null>({
-    id: "1",
-    name: "Alex",
-    role: "user",
-    dateOfBirth: today.toISOString(), // Today's date means it's their birthday
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    // Mock the auth flow
+    const timer = setTimeout(() => {
+      const today = new Date();
+      setUser({
+        id: "1",
+        name: "Alex",
+        role: "user",
+        dateOfBirth: today.toISOString(),
+      });
+      setIsLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, isLoading, isAdmin }}>
       {children}
     </UserContext.Provider>
   );
