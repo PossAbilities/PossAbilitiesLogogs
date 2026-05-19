@@ -36,6 +36,10 @@ interface DataContextType {
   setEasyReads: React.Dispatch<React.SetStateAction<EasyReadItem[]>>;
   workshops: WorkshopItem[];
   setWorkshops: React.Dispatch<React.SetStateAction<WorkshopItem[]>>;
+  heroSettings: HeroSettings;
+  setHeroSettings: React.Dispatch<React.SetStateAction<HeroSettings>>;
+  fetchHeroSettings: () => Promise<void>;
+  updateHeroSettings: (newSettings: HeroSettings) => Promise<void>;
   fetchNews: () => Promise<void>;
   fetchEvents: () => Promise<void>;
 }
@@ -159,6 +163,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     initFetchNews();
     initFetchEvents();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchHeroSettings();
     return () => { mounted = false; };
   }, []);
 
@@ -170,7 +176,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
       videos, setVideos,
       easyReads, setEasyReads,
       workshops, setWorkshops,
-      fetchNews, fetchEvents
+      fetchNews, fetchEvents,
+      heroSettings, setHeroSettings,
+      fetchHeroSettings, updateHeroSettings
     }}>
       {children}
     </DataContext.Provider>
