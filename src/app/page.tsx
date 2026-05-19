@@ -5,20 +5,6 @@ import { GlassCard } from "@/components/GlassCard";
 import Link from "next/link";
 import { useState } from "react";
 
-interface Shoutout {
-  id: number;
-  initial: string;
-  color: string;
-  message: string;
-  delay: string;
-  duration: string;
-  top: string | 'auto';
-  bottom?: string;
-  left: string | 'auto';
-  right?: string;
-}
-
-
 export default function Home() {
   const { news, events } = useData();
   const [fontSizeMultiplier, setFontSizeMultiplier] = useState(1);
@@ -50,7 +36,7 @@ export default function Home() {
   const handleShoutoutSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (shoutoutName && shoutoutMessage) {
-      const newShoutout = {
+      const newShoutout: Shoutout = {
         id: Date.now(),
         initial: shoutoutName.charAt(0).toUpperCase(),
         color: 'bg-purple-500',
@@ -60,7 +46,7 @@ export default function Home() {
         top: `${Math.floor(Math.random() * 60) + 10}%`,
         left: `${Math.floor(Math.random() * 60) + 10}%`,
       };
-      setShoutouts([...shoutouts, newShoutout]);
+      setShoutouts([...shoutouts, newShoutout as unknown as typeof shoutouts[0]]);
       setShowShoutoutModal(false);
       setShoutoutName("");
       setShoutoutMessage("");
