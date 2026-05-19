@@ -5,6 +5,21 @@ import { GlassCard } from "@/components/GlassCard";
 import Link from "next/link";
 import { useState } from "react";
 
+
+
+export interface Shoutout {
+  id: number;
+  initial: string;
+  color: string;
+  message: string;
+  delay: string;
+  duration: string;
+  top?: string;
+  left?: string;
+  right?: string;
+  bottom?: string;
+}
+
 export default function Home() {
   const { news, events } = useData();
   const [fontSizeMultiplier, setFontSizeMultiplier] = useState(1);
@@ -46,7 +61,7 @@ export default function Home() {
         top: `${Math.floor(Math.random() * 60) + 10}%`,
         left: `${Math.floor(Math.random() * 60) + 10}%`,
       };
-      setShoutouts([...shoutouts, newShoutout as unknown as typeof shoutouts[0]]);
+      setShoutouts([...shoutouts, newShoutout]);
       setShowShoutoutModal(false);
       setShoutoutName("");
       setShoutoutMessage("");
