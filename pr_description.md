@@ -1,10 +1,9 @@
-🧪 Add tests for BirthdayBanner
+🧪 [Testing Improvement] Add Error Handling Tests for AdminNewsPage
 
-🎯 **What:** Added comprehensive unit tests for the `BirthdayBanner` component to ensure it properly handles user state and renders correctly based on the current date and stored preferences.
-📊 **Coverage:** Covered scenarios:
-- Does not render when user data is missing.
-- Does not render when it is not the user's birthday.
-- Renders the banner with the correct user's name when it is their birthday.
-- Successfully dismisses the banner and saves the dismissal state to `localStorage`.
-- Prevents rendering if the banner was already dismissed today.
-✨ **Result:** Improved test coverage for `BirthdayBanner`, ensuring regressions can be caught automatically when making future changes.
+🎯 **What:** The untested error handling code block in `AdminNewsPage.handleSubmit` where a fallback mechanism triggers if the Supabase request fails.
+
+📊 **Coverage:**
+* Added a test case confirming successful behavior: The `mockUpsert` operates flawlessly and signals success correctly.
+* Added a test case to cover the untested code block: Simulated a `supabase.from('news').upsert()` error, asserting `console.error` logs the error, a `window.alert` informs the user of the fallback, and the local `setNews` is properly called.
+
+✨ **Result:** Enhanced test coverage for the error-handling fallback logic within the Admin News Page, ensuring any refactoring does not break the optimistic/fallback update mechanism.
