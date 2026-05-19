@@ -17,6 +17,26 @@ import {
   mockUsers
 } from "@/lib/data";
 
+
+interface SupabaseNewsRow {
+  id: { toString: () => string };
+  title: string;
+  content: string;
+  created_at: string;
+  image_url?: string;
+  image_urls?: string[];
+}
+
+interface SupabaseEventRow {
+  id: { toString: () => string };
+  title: string;
+  description?: string;
+  location?: string;
+  event_date?: string;
+  created_at: string;
+  image_url?: string;
+}
+
 interface DataContextType {
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
