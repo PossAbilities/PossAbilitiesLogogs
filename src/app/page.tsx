@@ -5,6 +5,21 @@ import { GlassCard } from "@/components/GlassCard";
 import Link from "next/link";
 import { useState } from "react";
 
+
+
+export interface Shoutout {
+  id: number;
+  initial: string;
+  color: string;
+  message: string;
+  delay: string;
+  duration: string;
+  top?: string;
+  left?: string;
+  right?: string;
+  bottom?: string;
+}
+
 export default function Home() {
   const { news, events } = useData();
   const [fontSizeMultiplier, setFontSizeMultiplier] = useState(1);
@@ -46,7 +61,7 @@ export default function Home() {
         top: `${Math.floor(Math.random() * 60) + 10}%`,
         left: `${Math.floor(Math.random() * 60) + 10}%`,
       };
-      setShoutouts([...shoutouts, newShoutout as unknown as typeof shoutouts[0]]);
+      setShoutouts([...shoutouts, newShoutout]);
       setShowShoutoutModal(false);
       setShoutoutName("");
       setShoutoutMessage("");
@@ -311,7 +326,7 @@ export default function Home() {
               {shoutouts.map((shoutout) => (
                 <div
                   key={shoutout.id}
-                  className="absolute p-3 flex items-center gap-3 animate-pulse hover:scale-105 transition-transform bg-white/80 backdrop-blur-sm border border-white rounded-2xl shadow-sm cursor-pointer"
+                  className="absolute p-3 flex items-center gap-3 animate-pulse hover:scale-105 hover:z-10 transition-transform bg-white/80 backdrop-blur-sm border border-white rounded-2xl shadow-sm cursor-pointer"
                   style={{
                     animationDuration: shoutout.duration,
                     animationDelay: shoutout.delay,
