@@ -8,7 +8,8 @@ import {
   VideoItem,
   EasyReadItem,
   WorkshopItem,
-  User
+  User,
+  HeroSettings
 } from "@/lib/data";
 import mockDataRaw from "@/lib/mock-data.json";
 
@@ -53,6 +54,54 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [videos, setVideos] = useState<VideoItem[]>(mockData.mockVideos);
   const [easyReads, setEasyReads] = useState<EasyReadItem[]>(mockData.mockEasyReads);
   const [workshops, setWorkshops] = useState<WorkshopItem[]>(mockData.mockWorkshops);
+  const [heroSettings, setHeroSettings] = useState<HeroSettings>({ id: '00000000-0000-0000-0000-000000000001', showHero: false });
+
+
+  const fetchHeroSettings = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('hero_settings')
+        .select('*')
+        .single();
+
+      if (error) {
+        console.warn("Using default hero settings (Supabase fetch failed):", error.message);
+        return;
+      }
+
+      if (data) {
+        setHeroSettings({
+          id: data.id,
+          showHero: data.show_hero,
+          imageUrl: data.image_url,
+          linkUrl: data.link_url
+        });
+      }
+    } catch (error) {
+      console.warn("Using default hero settings (fetch threw error):", error);
+    }
+  };
+
+  const updateHeroSettings = async (newSettings: HeroSettings) => {
+    try {
+      const { error } = await supabase
+        .from('hero_settings')
+        .upsert({
+          id: newSettings.id,
+          show_hero: newSettings.showHero,
+          image_url: newSettings.imageUrl,
+          link_url: newSettings.linkUrl,
+          updated_at: new Date().toISOString(),
+        });
+
+      if (error) throw error;
+
+      setHeroSettings(newSettings);
+    } catch (error) {
+      console.error("Error updating hero settings:", error);
+      throw error;
+    }
+  };
 
   const fetchNews = async () => {
     try {
