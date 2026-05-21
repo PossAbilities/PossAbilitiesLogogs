@@ -1,3 +1,5 @@
+#!/bin/bash
+cat << 'INNER_EOF' > src/components/DataProvider.test.tsx
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { DataProvider, useData } from './DataProvider';
@@ -224,3 +226,4 @@ describe('DataProvider', () => {
     });
   });
 });
+INNER_EOF

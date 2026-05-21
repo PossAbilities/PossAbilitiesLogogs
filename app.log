@@ -1,8 +1,16 @@
 
-> temp_dir@0.1.0 start
-> next start
+> temp_dir@0.1.0 dev
+> next dev -p 3003
 
-▲ Next.js 16.2.6
-- Local:         http://localhost:3000
-- Network:       http://192.168.0.2:3000
-✓ Ready in 567ms
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3003
+- Network:       http://192.168.0.2:3003
+✓ Ready in 534ms
+
+○ Compiling / ...
+ GET / 200 in 7.9s (next.js: 6.8s, application-code: 1116ms)
+ GET /events 200 in 1047ms (next.js: 946ms, application-code: 101ms)
+ GET / 200 in 87ms (next.js: 5ms, application-code: 83ms)
+ GET / 200 in 101ms (next.js: 4ms, application-code: 98ms)
+ GET /events 200 in 97ms (next.js: 4ms, application-code: 93ms)
+ GET /easy-reads 200 in 882ms (next.js: 794ms, application-code: 89ms)
