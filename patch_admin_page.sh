@@ -1,3 +1,5 @@
+#!/bin/bash
+cat << 'INNER_EOF' > src/app/admin/page.tsx
 "use client";
 import { GlassCard } from "@/components/GlassCard";
 import Link from "next/link";
@@ -142,3 +144,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+INNER_EOF

@@ -7,10 +7,10 @@ async def verify():
         context = await browser.new_context(record_video_dir="/home/jules/verification/videos/", viewport={'width': 1280, 'height': 720})
         page = await context.new_page()
 
-        await page.goto("http://localhost:3003/admin/manage-easy-reads")
+        await page.goto("http://localhost:3003/admin")
         await page.wait_for_load_state("networkidle")
 
-        await page.screenshot(path="/home/jules/verification/screenshots/admin_manage_easy_reads.png", full_page=True)
+        await page.screenshot(path="/home/jules/verification/screenshots/admin_dashboard.png", full_page=True)
 
         await browser.close()
 
