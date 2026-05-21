@@ -103,6 +103,28 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const [heroSettings, setHeroSettings] = useState<HeroSettings>({ showHero: false, imageUrl: "", linkUrl: "" });
+
+  const fetchHeroSettings = async () => {
+    try {
+      const stored = localStorage.getItem("heroSettings");
+      if (stored) {
+        setHeroSettings(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.error("Failed to load hero settings", e);
+    }
+  };
+
+  const updateHeroSettings = async (newSettings: HeroSettings) => {
+    try {
+      localStorage.setItem("heroSettings", JSON.stringify(newSettings));
+      setHeroSettings(newSettings);
+    } catch (e) {
+      console.error("Failed to save hero settings", e);
+    }
+  };
+
   const fetchNews = async () => {
     try {
       const { data, error } = await supabase

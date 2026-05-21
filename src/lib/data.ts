@@ -45,7 +45,7 @@ export type WorkshopItem = {
 };
 
 export type HeroSettings = {
-  id: string;
+  id?: string;
   showHero: boolean;
   imageUrl?: string;
   linkUrl?: string;
