@@ -8,7 +8,8 @@ import {
   VideoItem,
   EasyReadItem,
   WorkshopItem,
-  User
+  User,
+  HeroSettings
 } from "@/lib/data";
 import mockDataRaw from "@/lib/mock-data.json";
 
@@ -53,6 +54,28 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [videos, setVideos] = useState<VideoItem[]>(mockData.mockVideos);
   const [easyReads, setEasyReads] = useState<EasyReadItem[]>(mockData.mockEasyReads);
   const [workshops, setWorkshops] = useState<WorkshopItem[]>(mockData.mockWorkshops);
+
+  const [heroSettings, setHeroSettings] = useState<HeroSettings>({ showHero: false, imageUrl: "", linkUrl: "" });
+
+  const fetchHeroSettings = async () => {
+    try {
+      const stored = localStorage.getItem("heroSettings");
+      if (stored) {
+        setHeroSettings(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.error("Failed to load hero settings", e);
+    }
+  };
+
+  const updateHeroSettings = async (newSettings: HeroSettings) => {
+    try {
+      localStorage.setItem("heroSettings", JSON.stringify(newSettings));
+      setHeroSettings(newSettings);
+    } catch (e) {
+      console.error("Failed to save hero settings", e);
+    }
+  };
 
   const fetchNews = async () => {
     try {

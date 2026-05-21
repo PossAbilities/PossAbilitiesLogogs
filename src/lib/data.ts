@@ -43,3 +43,10 @@ export type WorkshopItem = {
   description: string;
   materialsUrl?: string;
 };
+
+export type HeroSettings = {
+  id?: string;
+  showHero: boolean;
+  imageUrl?: string;
+  linkUrl?: string;
+};
