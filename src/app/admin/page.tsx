@@ -30,7 +30,7 @@ export default function AdminDashboard() {
     setSaveMessage("");
     try {
       await updateHeroSettings({
-        id: heroSettings?.id || "1",
+        id: heroSettings?.id || "00000000-0000-0000-0000-000000000001",
         showHero,
         imageUrl,
         linkUrl,

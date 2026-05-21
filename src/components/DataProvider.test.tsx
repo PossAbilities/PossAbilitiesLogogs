@@ -13,7 +13,7 @@ vi.mock('@/utils/supabase', () => ({
   supabase: {
     from: (table: string) => ({
       select: () => ({
-        order: (col: string, opts: any) => mockOrder(table, col, opts)
+        order: (col: string, opts: unknown) => mockOrder(table, col, opts)
       })
     })
   }
