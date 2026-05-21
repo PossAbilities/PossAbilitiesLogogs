@@ -1,3 +1,5 @@
+#!/bin/bash
+cat << 'INNER_EOF' > src/app/admin/layout.tsx
 import { GlassCard } from "@/components/GlassCard";
 import Link from "next/link";
 import { ReactNode } from "react";
@@ -50,3 +52,4 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     </div>
   );
 }
+INNER_EOF

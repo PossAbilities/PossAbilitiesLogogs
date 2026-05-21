@@ -1,14 +1,12 @@
+#!/bin/bash
+cat << 'INNER_EOF' > src/app/easy-reads/page.tsx
 "use client";
 
 import { GlassCard } from "@/components/GlassCard";
 import { useData } from "@/components/DataProvider";
-import { BookOpen } from "lucide-react";
 
 export default function EasyReadsPage() {
   const { easyReads } = useData();
-
-  // Filter out any items where showOnPortal is explicitly false
-  const visibleEasyReads = easyReads.filter(item => item.showOnPortal !== false);
 
   return (
     <div className="space-y-8">
@@ -18,16 +16,16 @@ export default function EasyReadsPage() {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {visibleEasyReads.map((item) => (
+        {easyReads.map((item) => (
           <GlassCard key={item.id} className="bg-green-50/40 border-green-200/50 flex flex-col h-full">
             {item.coverUrl ? (
-              <div className="w-full aspect-video rounded-2xl mb-4 overflow-hidden border-b border-white/20 shadow-[inset_0_1px_4px_rgba(255,255,255,0.3)] bg-green-100/50">
+              <div className="w-full aspect-video rounded-2xl mb-4 overflow-hidden border-b border-white/20 shadow-[inset_0_1px_4px_rgba(255,255,255,0.3)]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={item.coverUrl} alt={item.title} className="w-full h-full object-cover transition-transform hover:scale-105 duration-300" />
               </div>
             ) : (
-              <div className="w-full aspect-video rounded-2xl mb-4 overflow-hidden border-b border-white/20 shadow-[inset_0_1px_4px_rgba(255,255,255,0.3)] bg-teal-500/80 flex items-center justify-center">
-                 <BookOpen className="w-16 h-16 text-white opacity-80" />
+              <div className="w-full aspect-video rounded-2xl mb-4 overflow-hidden border-b border-white/20 shadow-[inset_0_1px_4px_rgba(255,255,255,0.3)] bg-teal-500 flex items-center justify-center">
+                 <span className="text-white font-black tracking-widest uppercase">ADVOCACY</span>
               </div>
             )}
 
@@ -49,12 +47,8 @@ export default function EasyReadsPage() {
             )}
           </GlassCard>
         ))}
-        {visibleEasyReads.length === 0 && (
-          <div className="col-span-1 md:col-span-2 py-12 text-center text-gray-500 font-medium text-xl bg-white/40 rounded-2xl">
-             No easy read documents available at the moment.
-          </div>
-        )}
       </div>
     </div>
   );
 }
+INNER_EOF

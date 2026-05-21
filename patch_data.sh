@@ -1,3 +1,5 @@
+#!/bin/bash
+cat << 'INNER_EOF' > src/lib/data.ts
 export type User = {
   id: string;
   name: string;
@@ -53,3 +55,4 @@ export type HeroSettings = {
   imageUrl?: string;
   linkUrl?: string;
 };
+INNER_EOF

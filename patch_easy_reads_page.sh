@@ -1,3 +1,5 @@
+#!/bin/bash
+cat << 'INNER_EOF' > src/app/easy-reads/page.tsx
 "use client";
 
 import { GlassCard } from "@/components/GlassCard";
@@ -58,3 +60,4 @@ export default function EasyReadsPage() {
     </div>
   );
 }
+INNER_EOF

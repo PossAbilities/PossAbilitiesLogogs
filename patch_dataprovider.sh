@@ -1,3 +1,5 @@
+#!/bin/bash
+cat << 'INNER_EOF' > src/components/DataProvider.tsx
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
@@ -344,3 +346,4 @@ export function useData() {
   }
   return context;
 }
+INNER_EOF
