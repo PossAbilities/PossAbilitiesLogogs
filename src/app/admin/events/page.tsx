@@ -111,7 +111,7 @@ export default function AdminEventsPage() {
         });
       }
 
-      e.currentTarget.reset();
+      const target = e.target as HTMLFormElement; if (target && typeof target.reset === "function") target.reset();
       setMediaFile(null);
     } catch (err) {
       console.error("Error saving event:", err);
