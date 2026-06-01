@@ -224,11 +224,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
           let fileUrl = undefined;
 
           if (item.cover_path) {
-            coverUrl = `${coversBaseUrl}${item.cover_path.split('/').map(encodeURIComponent).join('/')}`;
+            coverUrl = coverBaseUrl + encodeURI(item.cover_path).replace(/#/g, '%23').replace(/\?/g, '%3F');
           }
 
           if (item.file_path) {
-            fileUrl = `${pdfsBaseUrl}${item.file_path.split('/').map(encodeURIComponent).join('/')}`;
+            fileUrl = pdfBaseUrl + encodeURI(item.file_path).replace(/#/g, '%23').replace(/\?/g, '%3F');
           }
 
           return {
