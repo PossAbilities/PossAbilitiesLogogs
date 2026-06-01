@@ -166,17 +166,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
+        const coversStorage = supabase.storage.from('covers');
+        const pdfsStorage = supabase.storage.from('pdfs');
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mappedData: EasyReadItem[] = data.map((item: any) => {
           let coverUrl = undefined;
           let fileUrl = undefined;
 
           if (item.cover_path) {
-            coverUrl = supabase.storage.from('covers').getPublicUrl(item.cover_path).data.publicUrl;
+            coverUrl = coversStorage.getPublicUrl(item.cover_path).data.publicUrl;
           }
 
           if (item.file_path) {
-            fileUrl = supabase.storage.from('pdfs').getPublicUrl(item.file_path).data.publicUrl;
+            fileUrl = pdfsStorage.getPublicUrl(item.file_path).data.publicUrl;
           }
 
           return {
@@ -259,17 +262,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
+          const coversStorage = supabase.storage.from('covers');
+          const pdfsStorage = supabase.storage.from('pdfs');
+
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const mappedData: EasyReadItem[] = data.map((item: any) => {
             let coverUrl = undefined;
             let fileUrl = undefined;
 
             if (item.cover_path) {
-              coverUrl = supabase.storage.from('covers').getPublicUrl(item.cover_path).data.publicUrl;
+              coverUrl = coversStorage.getPublicUrl(item.cover_path).data.publicUrl;
             }
 
             if (item.file_path) {
-              fileUrl = supabase.storage.from('pdfs').getPublicUrl(item.file_path).data.publicUrl;
+              fileUrl = pdfsStorage.getPublicUrl(item.file_path).data.publicUrl;
             }
 
             return {
