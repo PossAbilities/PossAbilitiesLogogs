@@ -98,4 +98,41 @@ describe('AdminNewsPage Error Handling', () => {
     expect(alertMock).toHaveBeenCalledWith('Something went wrong saving to Supabase! Falling back to local state.');
     expect(setNewsMock).toHaveBeenCalled();
   });
+
+  it('handles error in deleteImageFromStorage gracefully', async () => {
+    const setNewsMock = vi.fn();
+    const fetchNewsMock = vi.fn();
+    (useData as ReturnType<typeof vi.fn>).mockReturnValue({
+      news: [{ id: '1', title: 'Test Article', content: 'Test Content', date: new Date().toISOString(), imageUrls: ['news-media/test-image.jpg'] }],
+      setNews: setNewsMock,
+      fetchNews: fetchNewsMock,
+    });
+
+    const consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Mock Supabase upsert to succeed
+    const mockUpsert = vi.fn().mockReturnValue({ select: vi.fn().mockResolvedValue({ data: { id: '1' }, error: null }) });
+    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValue({ upsert: mockUpsert });
+
+    // Mock storage to throw error
+    const removeMock = vi.fn().mockRejectedValue(new Error('Storage delete failed'));
+    (supabase.storage.from as ReturnType<typeof vi.fn>).mockReturnValue({ remove: removeMock });
+
+    render(<AdminNewsPage />);
+
+    // Click Edit on the article
+    fireEvent.click(screen.getByText('Edit'));
+
+    // Wait for form to appear and click delete on the image
+    const deleteButton = screen.getByTitle('Delete');
+    fireEvent.click(deleteButton);
+
+    // Submit form
+    fireEvent.click(screen.getByText('Publish Changes'));
+
+    // Verify error is logged
+    await waitFor(() => {
+      expect(consoleErrorMock).toHaveBeenCalledWith('Failed to delete image:', expect.any(Error));
+    });
+  });
 });
