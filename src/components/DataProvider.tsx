@@ -166,17 +166,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
+        const coversBaseUrl = supabase.storage.from('covers').getPublicUrl('').data.publicUrl;
+        const pdfsBaseUrl = supabase.storage.from('pdfs').getPublicUrl('').data.publicUrl;
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mappedData: EasyReadItem[] = data.map((item: any) => {
           let coverUrl = undefined;
           let fileUrl = undefined;
 
           if (item.cover_path) {
-            coverUrl = supabase.storage.from('covers').getPublicUrl(item.cover_path).data.publicUrl;
+            coverUrl = `${coversBaseUrl}${item.cover_path.split('/').map(encodeURIComponent).join('/')}`;
           }
 
           if (item.file_path) {
-            fileUrl = supabase.storage.from('pdfs').getPublicUrl(item.file_path).data.publicUrl;
+            fileUrl = `${pdfsBaseUrl}${item.file_path.split('/').map(encodeURIComponent).join('/')}`;
           }
 
           return {
@@ -259,18 +262,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const mappedData: EasyReadItem[] = data.map((item: any) => {
-            let coverUrl = undefined;
-            let fileUrl = undefined;
+          const coversBaseUrl = supabase.storage.from('covers').getPublicUrl('').data.publicUrl;
+        const pdfsBaseUrl = supabase.storage.from('pdfs').getPublicUrl('').data.publicUrl;
 
-            if (item.cover_path) {
-              coverUrl = supabase.storage.from('covers').getPublicUrl(item.cover_path).data.publicUrl;
-            }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mappedData: EasyReadItem[] = data.map((item: any) => {
+          let coverUrl = undefined;
+          let fileUrl = undefined;
 
-            if (item.file_path) {
-              fileUrl = supabase.storage.from('pdfs').getPublicUrl(item.file_path).data.publicUrl;
-            }
+          if (item.cover_path) {
+            coverUrl = `${coversBaseUrl}${item.cover_path.split('/').map(encodeURIComponent).join('/')}`;
+          }
+
+          if (item.file_path) {
+            fileUrl = `${pdfsBaseUrl}${item.file_path.split('/').map(encodeURIComponent).join('/')}`;
+          }
 
             return {
               id: item.id.toString(),
