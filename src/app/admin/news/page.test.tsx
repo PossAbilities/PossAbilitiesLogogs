@@ -98,4 +98,55 @@ describe('AdminNewsPage Error Handling', () => {
     expect(alertMock).toHaveBeenCalledWith('Something went wrong saving to Supabase! Falling back to local state.');
     expect(setNewsMock).toHaveBeenCalled();
   });
+
+  it('handles error when uploading image fails', async () => {
+    // Setup mocks
+    const setNewsMock = vi.fn();
+    const fetchNewsMock = vi.fn();
+    (useData as ReturnType<typeof vi.fn>).mockReturnValue({
+      news: [],
+      setNews: setNewsMock,
+      fetchNews: fetchNewsMock,
+    });
+
+    const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    const consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    global.URL.createObjectURL = vi.fn().mockReturnValue('blob:test');
+
+    const mockUpload = vi.fn().mockResolvedValue({ error: new Error('Upload error') });
+    (supabase.storage.from as ReturnType<typeof vi.fn>).mockReturnValue({
+      upload: mockUpload,
+      remove: vi.fn(),
+    });
+
+    const mockUpsert = vi.fn().mockReturnValue({ select: vi.fn().mockResolvedValue({ data: { id: '123' }, error: null }) });
+    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValue({ upsert: mockUpsert });
+
+    render(<AdminNewsPage />);
+
+    // Click create
+    fireEvent.click(screen.getByText('+ Create Post'));
+
+    // Fill out form
+    fireEvent.change(screen.getByPlaceholderText('Enter article title'), { target: { value: 'Test Title' } });
+    fireEvent.change(screen.getByPlaceholderText('Write your article content here...'), { target: { value: 'Test Content' } });
+
+    // Add file
+    const file = new File(['dummy content'], 'test.png', { type: 'image/png' });
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    // Submit form
+    fireEvent.click(screen.getByText('Publish Changes'));
+
+    // Wait for async operations
+    await waitFor(() => {
+      expect(consoleErrorMock).toHaveBeenCalledWith('Error saving:', 'Upload error');
+    });
+
+    expect(alertMock).toHaveBeenCalledWith('Something went wrong saving to Supabase! Falling back to local state.');
+    expect(setNewsMock).toHaveBeenCalled();
+  });
+
 });
