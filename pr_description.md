@@ -1,9 +1,3 @@
-🧪 [Testing Improvement] Add Error Handling Tests for AdminNewsPage
-
-🎯 **What:** The untested error handling code block in `AdminNewsPage.handleSubmit` where a fallback mechanism triggers if the Supabase request fails.
-
-📊 **Coverage:**
-* Added a test case confirming successful behavior: The `mockUpsert` operates flawlessly and signals success correctly.
-* Added a test case to cover the untested code block: Simulated a `supabase.from('news').upsert()` error, asserting `console.error` logs the error, a `window.alert` informs the user of the fallback, and the local `setNews` is properly called.
-
-✨ **Result:** Enhanced test coverage for the error-handling fallback logic within the Admin News Page, ensuring any refactoring does not break the optimistic/fallback update mechanism.
+🎯 **What:** The vulnerability fixed is the insecure Supabase Client Usage for Database Writes on the client side using the anon key.
+⚠️ **Risk:** If left unfixed, without robust Row Level Security (RLS) configured in Supabase, any user with the anon key could insert, update, or delete records in the news database, causing data integrity issues and potential abuse.
+🛡️ **Solution:** The database write (upsert) and delete operations have been moved from the client side `src/app/admin/news/page.tsx` to a new server-side API Route `src/app/api/news/route.ts`. The client now uses `fetch` to securely trigger these operations via the API Route. Tests have been updated to mock `fetch` accordingly.

@@ -18,9 +18,15 @@ export default function AdminNewsPage() {
     // Optimistic UI update
     setNews(news.filter(item => item.id !== id));
 
-    const { error } = await supabase.from('news').delete().eq('id', id);
-    if (error) {
-      console.error("Error deleting:", error.message);
+    try {
+      const res = await fetch(`/api/news?id=${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to delete");
+      }
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      console.error("Error deleting:", msg);
       alert("Failed to delete from database. Please try again.");
       fetchNews(); // Revert on failure
     }
@@ -129,12 +135,16 @@ export default function AdminNewsPage() {
         created_at: editingArticle?.date || new Date().toISOString(),
       };
 
-      const { error } = await supabase
-        .from('news')
-        .upsert(payload)
-        .select();
+      const res = await fetch('/api/news', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-      if (error) throw error;
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to upsert");
+      }
 
       alert("News Published Successfully! ✨");
       fetchNews(); // Refresh the list from DB
