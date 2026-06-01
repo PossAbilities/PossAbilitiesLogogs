@@ -51,6 +51,28 @@ interface SupabasePdfRow {
   content?: string | null;
   cover_path?: string | null;
   file_path?: string | null;
+  image_url: string;
+  image_urls: string[] | null;
+}
+
+interface SupabaseEvent {
+  id: string | number;
+  title: string;
+  description: string | null;
+  location: string | null;
+  event_date: string | null;
+  created_at: string;
+  image_url: string;
+}
+
+interface SupabasePdf {
+  id: string | number;
+  title: string | null;
+  description: string | null;
+  content: string | null;
+  cover_path: string | null;
+  file_path: string | null;
+  created_at: string;
 }
 
 interface DataContextType {
