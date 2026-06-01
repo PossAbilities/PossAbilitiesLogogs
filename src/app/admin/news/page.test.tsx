@@ -19,10 +19,13 @@ vi.mock('@/utils/supabase', () => ({
 }));
 
 describe('AdminNewsPage Error Handling', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
-
 
   it('saves news successfully and updates data from Supabase', async () => {
     // Setup mocks
@@ -97,5 +100,127 @@ describe('AdminNewsPage Error Handling', () => {
 
     expect(alertMock).toHaveBeenCalledWith('Something went wrong saving to Supabase! Falling back to local state.');
     expect(setNewsMock).toHaveBeenCalled();
+  });
+});
+
+describe('Media Management', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    global.URL.createObjectURL = vi.fn((file) => `blob:${file.name}`);
+  });
+
+  it('adds existing remote image URLs to deletedMedia when removed', async () => {
+    const setNewsMock = vi.fn();
+    const fetchNewsMock = vi.fn();
+    // useData is imported from Provider, but we can just mock its return
+    (useData as ReturnType<typeof vi.fn>).mockReturnValue({
+      news: [{
+        id: '1',
+        title: 'Article with Image',
+        content: 'Content',
+        date: new Date().toISOString(),
+        imageUrls: ['https://example.supabase.co/storage/v1/object/public/news-media/1/existing-image.jpg']
+      }],
+      setNews: setNewsMock,
+      fetchNews: fetchNewsMock,
+    });
+
+    const mockRemove = vi.fn().mockResolvedValue({ error: null });
+    const mockStorageFrom = vi.fn().mockReturnValue({
+      remove: mockRemove,
+      upload: vi.fn().mockResolvedValue({ error: null }),
+      getPublicUrl: vi.fn().mockReturnValue({ data: { publicUrl: 'new-url' } }),
+    });
+
+    (supabase.storage.from as ReturnType<typeof vi.fn>).mockImplementation(() => mockStorageFrom())
+
+    const mockUpsert = vi.fn().mockReturnValue({ select: vi.fn().mockResolvedValue({ data: { id: '1' }, error: null }) });
+    supabase.from.mockReturnValue({ upsert: mockUpsert });
+
+    render(<AdminNewsPage />);
+
+    // Click edit on the article
+    fireEvent.click(screen.getByText('Edit'));
+
+    // Verify image is rendered
+    const mediaImage = screen.getByAltText('Media preview');
+    expect(mediaImage).toBeInTheDocument();
+
+    // Click delete button
+    const deleteButton = screen.getByTitle('Delete');
+    fireEvent.click(deleteButton);
+
+    // Assert media is removed from UI
+    expect(screen.queryByAltText('Media preview')).not.toBeInTheDocument();
+
+    // Submit form to trigger storage removal
+    fireEvent.click(screen.getByText('Publish Changes'));
+
+    // Wait for async operations and verify remove was called
+    await waitFor(() => {
+      expect(mockRemove).toHaveBeenCalledWith(['1/existing-image.jpg']);
+    });
+  });
+
+  it('does NOT add local blob: image URLs to deletedMedia when removed', async () => {
+    const setNewsMock = vi.fn();
+    const fetchNewsMock = vi.fn();
+    (useData as ReturnType<typeof vi.fn>).mockReturnValue({
+      news: [],
+      setNews: setNewsMock,
+      fetchNews: fetchNewsMock,
+    });
+
+    const mockRemove = vi.fn().mockResolvedValue({ error: null });
+    const mockStorageFrom = vi.fn().mockReturnValue({
+      remove: mockRemove,
+      upload: vi.fn().mockResolvedValue({ error: null }),
+      getPublicUrl: vi.fn().mockReturnValue({ data: { publicUrl: 'new-url' } }),
+    });
+
+    (supabase.storage.from as ReturnType<typeof vi.fn>).mockImplementation(() => mockStorageFrom())
+
+    const mockUpsert = vi.fn().mockReturnValue({ select: vi.fn().mockResolvedValue({ data: { id: '2' }, error: null }) });
+    supabase.from.mockReturnValue({ upsert: mockUpsert });
+
+    render(<AdminNewsPage />);
+
+    // Click create post
+    fireEvent.click(screen.getByText('+ Create Post'));
+
+    // Add media
+    const fileInput = document.querySelector('input[type="file"]');
+    expect(fileInput).toBeInTheDocument();
+
+    const file = new File(['hello'], 'hello.png', { type: 'image/png' });
+    fireEvent.change(fileInput, { target: { files: [file] } });
+
+    // Ensure it's rendered
+    const mediaImage = await screen.findByAltText('Media preview');
+    expect(mediaImage).toBeInTheDocument();
+
+    // Click delete button
+    const deleteButton = screen.getByTitle('Delete');
+    fireEvent.click(deleteButton);
+
+    // Assert media is removed from UI
+    expect(screen.queryByAltText('Media preview')).not.toBeInTheDocument();
+
+    // Fill form to pass validation and submit
+    fireEvent.change(screen.getByPlaceholderText('Enter article title'), { target: { value: 'Blob Test' } });
+    fireEvent.change(screen.getByPlaceholderText('Write your article content here...'), { target: { value: 'Content' } });
+    fireEvent.click(screen.getByText('Publish Changes'));
+
+    // Wait for async save operations
+    await waitFor(() => {
+      expect(mockUpsert).toHaveBeenCalled();
+    });
+
+    // Verify remove was NOT called
+    expect(mockRemove).not.toHaveBeenCalled();
   });
 });
