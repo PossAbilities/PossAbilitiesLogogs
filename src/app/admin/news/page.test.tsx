@@ -2,21 +2,15 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import AdminNewsPage from './page';
 import { useData } from '@/components/DataProvider';
-import { supabase } from '@/utils/supabase';
+
 
 // Mock dependencies
 vi.mock('@/components/DataProvider', () => ({
   useData: vi.fn(),
 }));
 
-vi.mock('@/utils/supabase', () => ({
-  supabase: {
-    from: vi.fn(),
-    storage: {
-      from: vi.fn(),
-    },
-  },
-}));
+
+
 
 describe('AdminNewsPage Error Handling', () => {
   beforeEach(() => {
@@ -36,9 +30,11 @@ describe('AdminNewsPage Error Handling', () => {
 
     const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {});
 
-    // Mock Supabase upsert to succeed
-    const mockUpsert = vi.fn().mockReturnValue({ select: vi.fn().mockResolvedValue({ data: { id: '123' }, error: null }) });
-    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValue({ upsert: mockUpsert });
+    // Mock fetch to succeed
+    const mockFetch = vi.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ data: [{ id: '123' }] })
+    } as unknown as Response);
 
     render(<AdminNewsPage />);
 
@@ -54,7 +50,7 @@ describe('AdminNewsPage Error Handling', () => {
 
     // Wait for async operations
     await waitFor(() => {
-      expect(mockUpsert).toHaveBeenCalled();
+      expect(mockFetch).toHaveBeenCalledWith('/api/news', expect.objectContaining({ method: 'POST' }));
     });
 
     expect(alertMock).toHaveBeenCalledWith('News Published Successfully! ✨');
@@ -74,9 +70,11 @@ describe('AdminNewsPage Error Handling', () => {
     const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {});
     const consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    // Mock Supabase upsert to fail
-    const mockUpsert = vi.fn().mockReturnValue({ select: vi.fn().mockResolvedValue({ error: new Error('Supabase error') }) });
-    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValue({ upsert: mockUpsert });
+    // Mock fetch to fail
+    const mockFetch = vi.spyOn(global, 'fetch').mockResolvedValue({
+      ok: false,
+      json: vi.fn().mockResolvedValue({ error: 'Supabase error' })
+    } as unknown as Response);
 
     render(<AdminNewsPage />);
 
@@ -93,6 +91,7 @@ describe('AdminNewsPage Error Handling', () => {
     // Wait for async operations
     await waitFor(() => {
       expect(consoleErrorMock).toHaveBeenCalledWith('Error saving:', 'Supabase error');
+      expect(mockFetch).toHaveBeenCalledWith('/api/news', expect.objectContaining({ method: 'POST' }));
     });
 
     expect(alertMock).toHaveBeenCalledWith('Something went wrong saving to Supabase! Falling back to local state.');
