@@ -24,6 +24,39 @@ const mockData = {
 };
 
 
+
+
+
+
+interface DBNews {
+  id: number | string;
+  title: string;
+  content: string;
+  created_at: string;
+  image_url: string;
+  image_urls?: string[];
+}
+
+interface DBEvent {
+  id: number | string;
+  title: string;
+  description?: string;
+  location?: string;
+  event_date?: string;
+  created_at: string;
+  image_url?: string;
+}
+
+interface DBPdf {
+  id: number | string;
+  title?: string;
+  description?: string;
+  content?: string;
+  cover_path?: string;
+  file_path?: string;
+  created_at?: string;
+}
+
 interface DataContextType {
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
@@ -114,8 +147,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mappedData: NewsItem[] = data.map((item: any) => ({
+        const mappedData: NewsItem[] = data.map((item: DBNews) => ({
           id: item.id.toString(),
           title: item.title,
           content: item.content,
@@ -140,8 +172,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mappedData: EventItem[] = data.map((item: any) => ({
+        const mappedData: EventItem[] = data.map((item: DBEvent) => ({
           id: item.id.toString(),
           title: item.title,
           description: item.description || "",
@@ -166,8 +197,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mappedData: EasyReadItem[] = data.map((item: any) => {
+        const mappedData: EasyReadItem[] = data.map((item: DBPdf) => {
           let coverUrl = undefined;
           let fileUrl = undefined;
 
@@ -207,8 +237,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const mappedData: NewsItem[] = data.map((item: any) => ({
+          const mappedData: NewsItem[] = data.map((item: DBNews) => ({
             id: item.id.toString(),
             title: item.title,
             content: item.content,
@@ -233,8 +262,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const mappedData: EventItem[] = data.map((item: any) => ({
+          const mappedData: EventItem[] = data.map((item: DBEvent) => ({
             id: item.id.toString(),
             title: item.title,
             description: item.description || "",
@@ -259,8 +287,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const mappedData: EasyReadItem[] = data.map((item: any) => {
+          const mappedData: EasyReadItem[] = data.map((item: DBPdf) => {
             let coverUrl = undefined;
             let fileUrl = undefined;
 
