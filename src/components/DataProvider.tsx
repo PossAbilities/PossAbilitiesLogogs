@@ -24,7 +24,18 @@ const mockData = {
 };
 
 
+
+export interface SupabasePdfItem {
+  id: number | string;
+  title?: string;
+  description?: string;
+  content?: string;
+  cover_path?: string;
+  file_path?: string;
+}
+
 interface DataContextType {
+
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   news: NewsItem[];
@@ -166,8 +177,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mappedData: EasyReadItem[] = data.map((item: any) => {
+        const mappedData: EasyReadItem[] = data.map((item: SupabasePdfItem) => {
           let coverUrl = undefined;
           let fileUrl = undefined;
 
@@ -259,8 +269,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const mappedData: EasyReadItem[] = data.map((item: any) => {
+          const mappedData: EasyReadItem[] = data.map((item: SupabasePdfItem) => {
             let coverUrl = undefined;
             let fileUrl = undefined;
 
