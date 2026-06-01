@@ -1,9 +1,10 @@
-🧪 [Testing Improvement] Add Error Handling Tests for AdminNewsPage
+🧪 [testing improvement] Add missing test file for Footer component
 
-🎯 **What:** The untested error handling code block in `AdminNewsPage.handleSubmit` where a fallback mechanism triggers if the Supabase request fails.
+🎯 **What:** The `Footer` component was missing a test file, leaving a testing gap for this functional UI element.
 
-📊 **Coverage:**
-* Added a test case confirming successful behavior: The `mockUpsert` operates flawlessly and signals success correctly.
-* Added a test case to cover the untested code block: Simulated a `supabase.from('news').upsert()` error, asserting `console.error` logs the error, a `window.alert` informs the user of the fallback, and the local `setNews` is properly called.
+📊 **Coverage:** A new test file `src/components/Footer.test.tsx` has been added. The following scenarios are now tested:
+- Correct rendering of the footer navigation area.
+- Correct rendering of the copyright text featuring the dynamically updated current year.
+- Presence and correctness of all three required navigation links and their `href` attributes (Whistleblowing, Compliments & Complaints, Terms of Use).
 
-✨ **Result:** Enhanced test coverage for the error-handling fallback logic within the Admin News Page, ensuring any refactoring does not break the optimistic/fallback update mechanism.
+✨ **Result:** Test coverage for the application has been improved, and changes or refactors to the Footer component will now be safely caught by the unit tests.
