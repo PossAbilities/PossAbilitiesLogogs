@@ -23,6 +23,34 @@ const mockData = {
   }))
 };
 
+interface SupabaseNewsRow {
+  id: string | number;
+  title: string;
+  content: string;
+  created_at: string;
+  image_url: string;
+  image_urls: string[] | null;
+}
+
+interface SupabaseEventRow {
+  id: string | number;
+  title: string;
+  description: string | null;
+  location: string | null;
+  event_date: string | null;
+  created_at: string;
+  image_url: string;
+}
+
+interface SupabasePdfRow {
+  id: string | number;
+  title: string | null;
+  description: string | null;
+  content: string | null;
+  cover_path: string | null;
+  file_path: string | null;
+}
+
 
 interface DataContextType {
   users: User[];
@@ -114,8 +142,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mappedData: NewsItem[] = data.map((item: any) => ({
+        const mappedData: NewsItem[] = data.map((item: SupabaseNewsRow) => ({
           id: item.id.toString(),
           title: item.title,
           content: item.content,
@@ -140,8 +167,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mappedData: EventItem[] = data.map((item: any) => ({
+        const mappedData: EventItem[] = data.map((item: SupabaseEventRow) => ({
           id: item.id.toString(),
           title: item.title,
           description: item.description || "",
@@ -166,8 +192,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const mappedData: EasyReadItem[] = data.map((item: any) => {
+        const mappedData: EasyReadItem[] = data.map((item: SupabasePdfRow) => {
           let coverUrl = undefined;
           let fileUrl = undefined;
 
@@ -207,8 +232,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const mappedData: NewsItem[] = data.map((item: any) => ({
+          const mappedData: NewsItem[] = data.map((item: SupabaseNewsRow) => ({
             id: item.id.toString(),
             title: item.title,
             content: item.content,
@@ -233,8 +257,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const mappedData: EventItem[] = data.map((item: any) => ({
+          const mappedData: EventItem[] = data.map((item: SupabaseEventRow) => ({
             id: item.id.toString(),
             title: item.title,
             description: item.description || "",
@@ -259,8 +282,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const mappedData: EasyReadItem[] = data.map((item: any) => {
+          const mappedData: EasyReadItem[] = data.map((item: SupabasePdfRow) => {
             let coverUrl = undefined;
             let fileUrl = undefined;
 
