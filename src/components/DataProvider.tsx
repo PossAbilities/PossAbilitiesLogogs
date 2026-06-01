@@ -117,6 +117,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [heroSettings, setHeroSettings] = useState<HeroSettings>({ id: '00000000-0000-0000-0000-000000000001', showHero: false });
 
 
+
   const fetchHeroSettings = async () => {
     try {
       const { data, error } = await supabase
@@ -352,8 +353,34 @@ export function DataProvider({ children }: { children: ReactNode }) {
     initFetchNews();
     initFetchEvents();
     initFetchEasyReads();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchHeroSettings();
+
+
+    const initFetchHeroSettings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('hero_settings')
+          .select('*')
+          .single();
+
+        if (error) {
+          console.warn("Using default hero settings (Supabase fetch failed):", error.message);
+          return;
+        }
+
+        if (mounted && data) {
+          setHeroSettings({
+            id: data.id,
+            showHero: data.show_hero,
+            imageUrl: data.image_url,
+            linkUrl: data.link_url
+          });
+        }
+      } catch (error) {
+        console.warn("Using default hero settings (fetch threw error):", error);
+      }
+    };
+
+    initFetchHeroSettings();
     return () => { mounted = false; };
   }, []);
 
