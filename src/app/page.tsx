@@ -1,4 +1,7 @@
+
 "use client";
+
+import Image from "next/image";
 
 import { useData } from "@/components/DataProvider";
 import { GlassCard } from "@/components/GlassCard";
@@ -109,18 +112,26 @@ export default function Home() {
           <GlassCard className="bg-white/60 border-white/40 overflow-hidden p-0">
             {heroSettings.linkUrl ? (
               <Link href={heroSettings.linkUrl} className="block group">
-                <img
-                  src={heroSettings.imageUrl || "/api/placeholder/1200/400"}
-                  alt="Promotional Banner"
-                  className="w-full h-[300px] md:h-[400px] object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                <div className="relative w-full h-[300px] md:h-[400px]">
+                  <Image
+                    src={heroSettings.imageUrl || "/api/placeholder/1200/400"}
+                    alt="Promotional Banner"
+                    fill={true}
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    unoptimized={true}
+                  />
+                </div>
               </Link>
             ) : (
-              <img
+              <div className="relative w-full h-[300px] md:h-[400px]">
+              <Image
                 src={heroSettings.imageUrl || "/api/placeholder/1200/400"}
                 alt="Promotional Banner"
-                className="w-full h-[300px] md:h-[400px] object-cover"
+                fill={true}
+                className="object-cover"
+                unoptimized={true}
               />
+            </div>
             )}
           </GlassCard>
         ) : (
@@ -178,8 +189,7 @@ export default function Home() {
                     {/* The Premium Thumbnail */}
                     <div className="relative w-full aspect-[16/10] bg-[#E8F3FA] border-b border-[#A7C0D8]/30 flex items-center justify-center overflow-hidden">
                       {item.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={item.imageUrl} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <Image src={item.imageUrl} alt="" fill={true} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized={true} />
                       ) : (
                         <div className="absolute inset-0 bg-gradient-to-tr from-teal-600 to-teal-400"></div>
                       )}
@@ -235,8 +245,7 @@ export default function Home() {
                   {/* Event Thumbnail */}
                   <div className="relative aspect-[16/10] bg-[#FCE7F3] overflow-hidden border-b border-[#FBCFE8]">
                     {event.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={event.imageUrl} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <Image src={event.imageUrl} alt="" fill={true} sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-cover group-hover:scale-105 transition-transform duration-500" unoptimized={true} />
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
                         <span className="text-[#DB2777] font-black tracking-widest text-2xl opacity-20 uppercase">ADVOCACY</span>

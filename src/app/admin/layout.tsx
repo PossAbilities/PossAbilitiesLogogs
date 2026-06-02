@@ -1,8 +1,29 @@
+"use client";
+
 import { GlassCard } from "@/components/GlassCard";
 import Link from "next/link";
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
+import { useUser } from "@/components/UserProvider";
+import { useRouter } from "next/navigation";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
+  const { user, isLoading, isAdmin } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && (!user || !isAdmin)) {
+      router.push("/");
+    }
+  }, [isLoading, user, isAdmin, router]);
+
+  if (isLoading) {
+    return <div className="p-8 text-center text-gray-500 font-medium">Checking authorization...</div>;
+  }
+
+  if (!user || !isAdmin) {
+    return null;
+  }
+
   return (
     <div className="flex flex-col md:flex-row gap-8">
       <aside className="w-full md:w-64 shrink-0">
