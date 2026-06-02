@@ -119,7 +119,7 @@ interface SupabasePdfRow {
   image_urls: string[] | null;
 }
 
-interface SupabaseEvent {
+interface SupabaseEventRow {
   id: string | number;
   title: string;
   description: string | null;
@@ -129,15 +129,15 @@ interface SupabaseEvent {
   image_url: string;
 }
 
-interface SupabasePdf {
+interface SupabasePdfRow {
   id: string | number;
   title: string | null;
   description: string | null;
   content: string | null;
   cover_path: string | null;
   file_path: string | null;
-  created_at: string;
 }
+
 
 interface DataContextType {
 
