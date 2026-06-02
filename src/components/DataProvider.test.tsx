@@ -176,7 +176,9 @@ describe('DataProvider', () => {
             id: 2,
             title: 'Manual Fetch News',
             content: 'Content',
-            created_at: '2023-01-01'
+            created_at: '2023-01-01',
+            image_url: 'placeholder',
+            image_urls: []
           }],
           error: null
         });
@@ -186,7 +188,11 @@ describe('DataProvider', () => {
           data: [{
             id: 2,
             title: 'Manual Fetch Event',
-            created_at: '2023-01-01'
+            description: 'Desc',
+            location: 'Loc',
+            event_date: '2023-01-02',
+            created_at: '2023-01-01',
+            image_url: 'placeholder'
           }],
           error: null
         });
@@ -196,6 +202,9 @@ describe('DataProvider', () => {
           data: [{
             id: 2,
             title: 'Manual Fetch PDF',
+            description: 'Desc',
+            cover_path: 'cover.jpg',
+            file_path: 'file.pdf',
             created_at: '2023-01-01'
           }],
           error: null
