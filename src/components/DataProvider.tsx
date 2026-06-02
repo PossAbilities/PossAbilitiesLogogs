@@ -52,7 +52,66 @@ interface SupabasePdfItem {
   created_at: string;
 }
 
+
+export interface SupabasePdfItem {
+  id: number | string;
+  title?: string;
+  description?: string;
+  content?: string;
+  cover_path?: string;
+  file_path?: string;
+interface SupabaseNewsRow {
+  id: string | number;
+  title: string;
+  content: string;
+  created_at: string;
+  image_url?: string | null;
+  image_urls?: string[] | null;
+}
+
+interface SupabaseEventRow {
+  id: string | number;
+  title: string;
+  description?: string | null;
+  location?: string | null;
+  event_date?: string | null;
+  created_at: string;
+  image_url?: string | null;
+}
+
+interface SupabasePdfRow {
+  id: string | number;
+  title?: string | null;
+  description?: string | null;
+  content?: string | null;
+  cover_path?: string | null;
+  file_path?: string | null;
+  image_url: string;
+  image_urls: string[] | null;
+}
+
+interface SupabaseEvent {
+  id: string | number;
+  title: string;
+  description: string | null;
+  location: string | null;
+  event_date: string | null;
+  created_at: string;
+  image_url: string;
+}
+
+interface SupabasePdf {
+  id: string | number;
+  title: string | null;
+  description: string | null;
+  content: string | null;
+  cover_path: string | null;
+  file_path: string | null;
+  created_at: string;
+}
+
 interface DataContextType {
+
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   news: NewsItem[];
@@ -84,6 +143,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [easyReads, setEasyReads] = useState<EasyReadItem[]>(mockData.mockEasyReads);
   const [workshops, setWorkshops] = useState<WorkshopItem[]>(mockData.mockWorkshops);
   const [heroSettings, setHeroSettings] = useState<HeroSettings>({ id: '00000000-0000-0000-0000-000000000001', showHero: false });
+
 
 
   const fetchHeroSettings = async () => {
@@ -142,12 +202,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        const mappedData: NewsItem[] = data.map((item: SupabaseNewsItem) => ({
+        const mappedData: NewsItem[] = data.map((item: SupabaseNewsRow) => ({
           id: item.id.toString(),
           title: item.title,
           content: item.content,
           date: item.created_at,
-          imageUrl: item.image_url === 'placeholder' ? undefined : item.image_url,
+          imageUrl: item.image_url === 'placeholder' || item.image_url === null ? undefined : item.image_url,
           imageUrls: item.image_urls || [],
         }));
         setNews(mappedData);
@@ -167,13 +227,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        const mappedData: EventItem[] = data.map((item: SupabaseEventItem) => ({
+        const mappedData: EventItem[] = data.map((item: SupabaseEventRow) => ({
           id: item.id.toString(),
           title: item.title,
           description: item.description || "",
           location: item.location || "TBD",
           date: item.event_date || item.created_at,
-          imageUrl: item.image_url === 'placeholder' ? undefined : item.image_url,
+          imageUrl: item.image_url === 'placeholder' || item.image_url === null ? undefined : item.image_url,
         }));
         setEvents(mappedData);
       }
@@ -192,16 +252,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data && data.length > 0) {
-        const mappedData: EasyReadItem[] = data.map((item: SupabasePdfItem) => {
+        const coversBaseUrl = supabase.storage.from('covers').getPublicUrl('').data.publicUrl;
+        const pdfsBaseUrl = supabase.storage.from('pdfs').getPublicUrl('').data.publicUrl;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mappedData: EasyReadItem[] = data.map((item: any) => {
           let coverUrl = undefined;
           let fileUrl = undefined;
 
           if (item.cover_path) {
-            coverUrl = supabase.storage.from('covers').getPublicUrl(item.cover_path).data.publicUrl;
+            coverUrl = coverBaseUrl + encodeURI(item.cover_path).replace(/#/g, '%23').replace(/\?/g, '%3F');
           }
 
           if (item.file_path) {
-            fileUrl = supabase.storage.from('pdfs').getPublicUrl(item.file_path).data.publicUrl;
+            fileUrl = pdfBaseUrl + encodeURI(item.file_path).replace(/#/g, '%23').replace(/\?/g, '%3F');
           }
 
           return {
@@ -232,12 +296,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          const mappedData: NewsItem[] = data.map((item: SupabaseNewsItem) => ({
+          const mappedData: NewsItem[] = data.map((item: SupabaseNewsRow) => ({
             id: item.id.toString(),
             title: item.title,
             content: item.content,
             date: item.created_at,
-            imageUrl: item.image_url === 'placeholder' ? undefined : item.image_url,
+            imageUrl: item.image_url === 'placeholder' || item.image_url === null ? undefined : item.image_url,
             imageUrls: item.image_urls || [],
           }));
           setNews(mappedData);
@@ -257,13 +321,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          const mappedData: EventItem[] = data.map((item: SupabaseEventItem) => ({
+          const mappedData: EventItem[] = data.map((item: SupabaseEventRow) => ({
             id: item.id.toString(),
             title: item.title,
             description: item.description || "",
             location: item.location || "TBD",
             date: item.event_date || item.created_at,
-            imageUrl: item.image_url === 'placeholder' ? undefined : item.image_url,
+            imageUrl: item.image_url === 'placeholder' || item.image_url === null ? undefined : item.image_url,
           }));
           setEvents(mappedData);
         }
@@ -282,17 +346,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (error) throw error;
 
         if (mounted && data && data.length > 0) {
-          const mappedData: EasyReadItem[] = data.map((item: SupabasePdfItem) => {
-            let coverUrl = undefined;
-            let fileUrl = undefined;
+          const coversBaseUrl = supabase.storage.from('covers').getPublicUrl('').data.publicUrl;
+        const pdfsBaseUrl = supabase.storage.from('pdfs').getPublicUrl('').data.publicUrl;
 
-            if (item.cover_path) {
-              coverUrl = supabase.storage.from('covers').getPublicUrl(item.cover_path).data.publicUrl;
-            }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mappedData: EasyReadItem[] = data.map((item: any) => {
+          let coverUrl = undefined;
+          let fileUrl = undefined;
 
-            if (item.file_path) {
-              fileUrl = supabase.storage.from('pdfs').getPublicUrl(item.file_path).data.publicUrl;
-            }
+          if (item.cover_path) {
+            coverUrl = `${coversBaseUrl}${item.cover_path.split('/').map(encodeURIComponent).join('/')}`;
+          }
+
+          if (item.file_path) {
+            fileUrl = `${pdfsBaseUrl}${item.file_path.split('/').map(encodeURIComponent).join('/')}`;
+          }
 
             return {
               id: item.id.toString(),
@@ -313,8 +381,34 @@ export function DataProvider({ children }: { children: ReactNode }) {
     initFetchNews();
     initFetchEvents();
     initFetchEasyReads();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchHeroSettings();
+
+
+    const initFetchHeroSettings = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('hero_settings')
+          .select('*')
+          .single();
+
+        if (error) {
+          console.warn("Using default hero settings (Supabase fetch failed):", error.message);
+          return;
+        }
+
+        if (mounted && data) {
+          setHeroSettings({
+            id: data.id,
+            showHero: data.show_hero,
+            imageUrl: data.image_url,
+            linkUrl: data.link_url
+          });
+        }
+      } catch (error) {
+        console.warn("Using default hero settings (fetch threw error):", error);
+      }
+    };
+
+    initFetchHeroSettings();
     return () => { mounted = false; };
   }, []);
 
