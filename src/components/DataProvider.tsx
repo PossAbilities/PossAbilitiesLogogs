@@ -13,6 +13,35 @@ import {
 } from "@/lib/data";
 import mockDataRaw from "@/lib/mock-data.json";
 
+
+interface SupabaseNewsRow {
+  id: string | number;
+  title: string;
+  content: string;
+  created_at: string;
+  image_url?: string;
+  image_urls?: string[];
+}
+
+interface SupabaseEventRow {
+  id: string | number;
+  title: string;
+  description?: string;
+  location?: string;
+  event_date?: string;
+  created_at: string;
+  image_url?: string;
+}
+
+interface SupabasePdfRow {
+  id: string | number;
+  title?: string;
+  description?: string;
+  content?: string;
+  cover_path?: string;
+  file_path?: string;
+}
+
 // Type assertion for mock data
 const mockData = {
   ...mockDataRaw,
