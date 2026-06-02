@@ -18,6 +18,80 @@ describe('AdminNewsPage Error Handling', () => {
   });
 
 
+  it('logs error when deleting image from storage returns an error object', async () => {
+    const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    const setNewsMock = vi.fn();
+    const fetchNewsMock = vi.fn();
+    (useData as ReturnType<typeof vi.fn>).mockReturnValue({
+      news: [{ id: '1', title: 'Test News', excerpt: 'abc', content: 'content', imageUrls: ['https://example.com/news-media/test.jpg'], createdAt: new Date().toISOString() }],
+      setNews: setNewsMock,
+      fetchNews: fetchNewsMock,
+    });
+
+    const consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const mockRemove = vi.fn().mockResolvedValue({ error: new Error('Storage error') });
+    (supabase.storage.from as ReturnType<typeof vi.fn>).mockReturnValue({ remove: mockRemove });
+
+    const mockUpsert = vi.fn().mockReturnValue({ select: vi.fn().mockResolvedValue({ data: { id: '1' }, error: null }) });
+    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValue({ upsert: mockUpsert });
+
+    render(<AdminNewsPage />);
+
+    fireEvent.click(screen.getByText('Edit'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Publish Changes')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTitle('Delete'));
+
+    fireEvent.click(screen.getByText('Publish Changes'));
+
+    await waitFor(() => {
+      expect(mockRemove).toHaveBeenCalledWith(['test.jpg']);
+      expect(consoleErrorMock).toHaveBeenCalledWith("Error deleting file from storage:", "Storage error");
+    });
+  });
+
+  it('logs error when deleting image from storage throws an exception', async () => {
+    const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {});
+    const setNewsMock = vi.fn();
+    const fetchNewsMock = vi.fn();
+    (useData as ReturnType<typeof vi.fn>).mockReturnValue({
+      news: [{ id: '1', title: 'Test News', excerpt: 'abc', content: 'content', imageUrls: ['https://example.com/news-media/test.jpg'], createdAt: new Date().toISOString() }],
+      setNews: setNewsMock,
+      fetchNews: fetchNewsMock,
+    });
+
+    const consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    const mockRemove = vi.fn().mockRejectedValue(new Error('Network error'));
+    (supabase.storage.from as ReturnType<typeof vi.fn>).mockReturnValue({ remove: mockRemove });
+
+    const mockUpsert = vi.fn().mockReturnValue({ select: vi.fn().mockResolvedValue({ data: { id: '1' }, error: null }) });
+    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValue({ upsert: mockUpsert });
+
+    render(<AdminNewsPage />);
+
+    fireEvent.click(screen.getByText('Edit'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Publish Changes')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByTitle('Delete'));
+
+    fireEvent.click(screen.getByText('Publish Changes'));
+
+    await waitFor(() => {
+      expect(mockRemove).toHaveBeenCalledWith(['test.jpg']);
+      expect(consoleErrorMock).toHaveBeenCalledWith("Failed to delete image:", expect.any(Error));
+    });
+  });
+
+
+
   it('saves news successfully and updates data from Supabase', async () => {
     // Setup mocks
     const setNewsMock = vi.fn();
