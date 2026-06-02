@@ -23,6 +23,34 @@ const mockData = {
   }))
 };
 
+interface SupabaseNewsItem {
+  id: string | number;
+  title: string;
+  content: string;
+  created_at: string;
+  image_url?: string;
+  image_urls?: string[];
+}
+
+interface SupabaseEventItem {
+  id: string | number;
+  title: string;
+  description?: string;
+  location?: string;
+  event_date?: string;
+  created_at: string;
+  image_url?: string;
+}
+
+interface SupabasePdfItem {
+  id: string | number;
+  title?: string;
+  description?: string;
+  content?: string;
+  cover_path?: string;
+  file_path?: string;
+  created_at: string;
+}
 
 
 export interface SupabasePdfItem {
