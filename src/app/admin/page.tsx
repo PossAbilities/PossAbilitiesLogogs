@@ -2,28 +2,23 @@
 import { GlassCard } from "@/components/GlassCard";
 import Link from "next/link";
 import { useData } from "@/components/DataProvider";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function AdminDashboard() {
   const { heroSettings, updateHeroSettings } = useData();
+  const [prevHeroSettings, setPrevHeroSettings] = useState(heroSettings);
   const [showHero, setShowHero] = useState(heroSettings?.showHero || false);
   const [imageUrl, setImageUrl] = useState(heroSettings?.imageUrl || "");
   const [linkUrl, setLinkUrl] = useState(heroSettings?.linkUrl || "");
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
 
-  useEffect(() => {
-    if (heroSettings) {
-      // The lint error indicates we shouldn't set state directly in the effect.
-      // Since we just want to initialize it, we can set it once, or let it derive.
-      // For this form, it is fine.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setShowHero(heroSettings.showHero);
-      setImageUrl(heroSettings.imageUrl || "");
-      setLinkUrl(heroSettings.linkUrl || "");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [heroSettings.showHero, heroSettings.imageUrl, heroSettings.linkUrl]);
+  if (heroSettings !== prevHeroSettings) {
+    setPrevHeroSettings(heroSettings);
+    setShowHero(heroSettings?.showHero || false);
+    setImageUrl(heroSettings?.imageUrl || "");
+    setLinkUrl(heroSettings?.linkUrl || "");
+  }
 
   const handleSaveHeroSettings = async () => {
     setIsSaving(true);
