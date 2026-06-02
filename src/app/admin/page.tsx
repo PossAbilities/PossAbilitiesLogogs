@@ -6,19 +6,18 @@ import { useState } from "react";
 
 export default function AdminDashboard() {
   const { heroSettings, updateHeroSettings } = useData();
+  const [prevHeroSettings, setPrevHeroSettings] = useState(heroSettings);
   const [showHero, setShowHero] = useState(heroSettings?.showHero || false);
   const [imageUrl, setImageUrl] = useState(heroSettings?.imageUrl || "");
   const [linkUrl, setLinkUrl] = useState(heroSettings?.linkUrl || "");
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
 
-  const [prevHeroSettings, setPrevHeroSettings] = useState(heroSettings);
-
-  if (heroSettings && heroSettings !== prevHeroSettings) {
+  if (heroSettings !== prevHeroSettings) {
     setPrevHeroSettings(heroSettings);
-    setShowHero(heroSettings.showHero || false);
-    setImageUrl(heroSettings.imageUrl || "");
-    setLinkUrl(heroSettings.linkUrl || "");
+    setShowHero(heroSettings?.showHero || false);
+    setImageUrl(heroSettings?.imageUrl || "");
+    setLinkUrl(heroSettings?.linkUrl || "");
   }
 
   const handleSaveHeroSettings = async () => {
