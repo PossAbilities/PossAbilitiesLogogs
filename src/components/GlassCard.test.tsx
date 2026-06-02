@@ -15,24 +15,35 @@ describe('GlassCard Component', () => {
     expect(element).toHaveClass('glass-card', 'p-6', 'md:p-8');
   });
 
-  it('merges custom classes correctly', () => {
-    const { container } = render(<GlassCard className="custom-class p-4">Content</GlassCard>);
+  it('appends additional custom classes', () => {
+    const { container } = render(<GlassCard className="my-custom-class">Content</GlassCard>);
     const element = container.firstChild as HTMLElement;
-    // tailwind-merge should replace p-6 with p-4
-    expect(element).toHaveClass('glass-card', 'md:p-8', 'custom-class', 'p-4');
-    expect(element).not.toHaveClass('p-6');
+    expect(element).toHaveClass('glass-card', 'my-custom-class');
   });
 
-  it('renders as a different HTML element', () => {
+  it('overrides default tailwind classes using tailwind-merge', () => {
+    // p-4 should override p-6
+    const { container } = render(<GlassCard className="p-4 md:p-2">Content</GlassCard>);
+    const element = container.firstChild as HTMLElement;
+    expect(element).toHaveClass('p-4', 'md:p-2');
+    expect(element).not.toHaveClass('p-6');
+    expect(element).not.toHaveClass('md:p-8');
+  });
+
+  it('renders as a custom element using the "as" prop', () => {
     const { container } = render(<GlassCard as="section">Content</GlassCard>);
     const element = container.firstChild as HTMLElement;
     expect(element.tagName).toBe('SECTION');
   });
 
-  it('passes through additional HTML attributes', () => {
-    const { container } = render(<GlassCard id="test-id" data-testid="test-card">Content</GlassCard>);
-    const element = container.firstChild as HTMLElement;
-    expect(element).toHaveAttribute('id', 'test-id');
-    expect(screen.getByTestId('test-card')).toBeInTheDocument();
+  it('passes additional HTML attributes to the element', () => {
+    render(
+      <GlassCard id="my-glass-card" data-testid="glass-card" aria-label="A glass card">
+        Content
+      </GlassCard>
+    );
+    const element = screen.getByTestId('glass-card');
+    expect(element).toHaveAttribute('id', 'my-glass-card');
+    expect(element).toHaveAttribute('aria-label', 'A glass card');
   });
 });

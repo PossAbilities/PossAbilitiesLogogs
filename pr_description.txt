@@ -1,0 +1,8 @@
+🎯 **What:** The vulnerability fixed
+The admin routes (`/admin/*`) were publicly accessible without any authorization checks. Any user could navigate to the admin dashboard and potentially modify or access sensitive data.
+
+⚠️ **Risk:** The potential impact if left unfixed
+Unauthenticated or unauthorized users could access the admin area, allowing them to view, edit, or delete content such as news, events, and easy reads. This could lead to a compromise of the application's integrity and data.
+
+🛡️ **Solution:** How the fix addresses the vulnerability
+Implemented a client-side authorization check in the `src/app/admin/layout.tsx` component. The layout now utilizes the existing `UserProvider` via the `useUser` hook to check if the current user is authenticated and has administrative privileges (`isAdmin`). If the user is not authorized, they are automatically redirected to the root path (`/`). While loading, a "Checking authorization..." message is displayed, and if unauthorized, the layout returns `null` to prevent any flash of unauthorized content.
