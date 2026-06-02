@@ -172,6 +172,11 @@ describe('AdminNewsPage Error Handling', () => {
     expect(setNewsMock).toHaveBeenCalled();
   });
 
+  it('handles error in deleteImageFromStorage gracefully', async () => {
+    const setNewsMock = vi.fn();
+    const fetchNewsMock = vi.fn();
+    (useData as ReturnType<typeof vi.fn>).mockReturnValue({
+      news: [{ id: '1', title: 'Test Article', content: 'Test Content', date: new Date().toISOString(), imageUrls: ['news-media/test-image.jpg'] }],
   it('removes existing media and marks for deletion (non-blob URL)', async () => {
     // Setup mocks
     const setNewsMock = vi.fn();
@@ -190,6 +195,24 @@ describe('AdminNewsPage Error Handling', () => {
       fetchNews: fetchNewsMock,
     });
 
+    const consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    // Mock Supabase upsert to succeed
+    const mockUpsert = vi.fn().mockReturnValue({ select: vi.fn().mockResolvedValue({ data: { id: '1' }, error: null }) });
+    (supabase.from as ReturnType<typeof vi.fn>).mockReturnValue({ upsert: mockUpsert });
+
+    // Mock storage to throw error
+    const removeMock = vi.fn().mockRejectedValue(new Error('Storage delete failed'));
+    (supabase.storage.from as ReturnType<typeof vi.fn>).mockReturnValue({ remove: removeMock });
+
+    render(<AdminNewsPage />);
+
+    // Click Edit on the article
+    fireEvent.click(screen.getByText('Edit'));
+
+    // Wait for form to appear and click delete on the image
+    const deleteButton = screen.getByTitle('Delete');
+    fireEvent.click(deleteButton);
     const alertMock = vi.spyOn(window, 'alert').mockImplementation(() => {});
 
     // Mock Supabase upsert to succeed
@@ -284,6 +307,11 @@ describe('AdminNewsPage Error Handling', () => {
     // Submit form
     fireEvent.click(screen.getByText('Publish Changes'));
 
+    // Verify error is logged
+    await waitFor(() => {
+      expect(consoleErrorMock).toHaveBeenCalledWith('Failed to delete image:', expect.any(Error));
+    });
+  });
     // Wait for async operations
     await waitFor(() => {
       expect(mockUpsert).toHaveBeenCalled();
