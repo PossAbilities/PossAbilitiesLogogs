@@ -2,32 +2,36 @@
 
 import { useUser } from "./UserProvider";
 import { GlassCard } from "./GlassCard";
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore, useCallback } from "react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function BirthdayBanner() {
   const { user } = useUser();
-  const [isDismissed, setIsDismissed] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-    if (user) {
-      const today = new Date().toISOString().split('T')[0];
-      const dismissed = localStorage.getItem(`birthdayDismissed_${user.id}_${today}`);
-      if (dismissed) {
-        setIsDismissed(true);
+  const subscribe = useCallback(() => () => {}, []);
+  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
+
+  const isDismissed = useSyncExternalStore(
+    subscribe,
+    () => {
+      if (user) {
+        const today = new Date().toISOString().split('T')[0];
+        return !!localStorage.getItem(`birthdayDismissed_${user.id}_${today}`);
       }
-    }
-  }, [user]);
+      return false;
+    },
+    () => false
+  );
+
+  const [localDismissed, setLocalDismissed] = useState(false);
+  const finalDismissed = isDismissed || localDismissed;
 
   const handleDismiss = () => {
     if (user) {
       const today = new Date().toISOString().split('T')[0];
       localStorage.setItem(`birthdayDismissed_${user.id}_${today}`, 'true');
-      setIsDismissed(true);
+      setLocalDismissed(true);
     }
   };
 
@@ -44,7 +48,7 @@ export function BirthdayBanner() {
 
   return (
     <AnimatePresence>
-      {!isDismissed && (
+      {!finalDismissed && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
