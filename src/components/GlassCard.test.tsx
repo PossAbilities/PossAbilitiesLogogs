@@ -1,10 +1,12 @@
 import { render, screen } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
 import { GlassCard } from './GlassCard';
+import React from 'react';
 
 describe('GlassCard Component', () => {
   it('renders children correctly', () => {
-    render(<GlassCard>Hello World</GlassCard>);
-    expect(screen.getByText('Hello World')).toBeInTheDocument();
+    render(<GlassCard>Test Content</GlassCard>);
+    expect(screen.getByText('Test Content')).toBeInTheDocument();
   });
 
   it('applies default classes', () => {
